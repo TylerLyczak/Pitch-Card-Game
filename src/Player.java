@@ -8,6 +8,8 @@ public class Player {
     ArrayList<Deck> trickList;
     int bid;
     boolean buttonPress;
+    boolean buttonPress2;
+    int turn;
 
     Player ()   {
         hand = new Deck();
@@ -35,6 +37,9 @@ public class Player {
                             trick.add(hand.cards.get(i));
                             hand.cards.remove(i);
                             buttonPress = true;
+                            buttonPress2 = true;
+                            turn++;
+                            System.out.println("Turn: " + turn);
                             System.out.println(buttonPress);
                             //return c1;
                             break;
@@ -53,6 +58,8 @@ public class Player {
     public void changeBoolButtonPress ()    {
         buttonPress = false;
     }
+
+    public void changeBoolButtonPress2 () { buttonPress2 = false;}
 
     public static void actionPerformed (javafx.event.ActionEvent event) {
         System.out.println("wowwwwww");

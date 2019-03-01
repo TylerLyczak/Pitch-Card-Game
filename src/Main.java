@@ -233,6 +233,7 @@ public class Main extends Application {
                 if(i == 360) i = 0;
                 v2.setRotate(i);
                 //testTrick.addCard(p1.playCard());
+                
 
 
 
@@ -300,9 +301,10 @@ public class Main extends Application {
                 }
 
                 // Change this depending on the players and the round and shit
-                if (trickList.size() == 20)  {
+                if (trickList.size() == playerNum && (p1.turn%3 == 0))  {
                     gamePane.setCenter(null);
                     trickList.clear();
+                    p1.changeBoolButtonPress2();
                 }
                 else if (trickList.size() != 0) {
                     //FlowPane trickFlow = new FlowPane();
