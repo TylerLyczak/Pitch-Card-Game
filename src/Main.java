@@ -289,6 +289,16 @@ public class Main extends Application {
                     gamePane.setBottom(newBox);
                 }
 
+                for (int i=0; i<AI.size(); i++) {
+                    if (gameDealer.deckSize() < 6) {
+                        gameDealer.dealerReset();
+                    }
+                    if (AI.get(i).hand.cards.size() == 0) {
+                        AI.get(i).hand.cards = gameDealer.dealHand();
+                    }
+
+                }
+
                 // Change this depending on the players and the round and shit
                 if (trickList.size() == 20)  {
                     gamePane.setCenter(null);
