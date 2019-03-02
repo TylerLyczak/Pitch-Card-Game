@@ -233,7 +233,7 @@ public class Main extends Application {
                 if(i == 360) i = 0;
                 v2.setRotate(i);
                 //testTrick.addCard(p1.playCard());
-                
+
 
 
 
@@ -316,6 +316,7 @@ public class Main extends Application {
                         trickPane.getChildren().add(trickList.get(i).cardPic);
                     }
                     //gamePane.setCenter(flow);
+                    
                     gamePane.setCenter(trickPane);
 
                 }
