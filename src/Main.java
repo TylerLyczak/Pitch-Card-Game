@@ -35,6 +35,7 @@ public class Main extends Application {
     //added
     // Player default is set to 2
     int playerNum = 2;
+    int bid;
     ArrayList<AIPlayer> AI = new ArrayList<AIPlayer>();
 
     @Override
@@ -57,6 +58,12 @@ public class Main extends Application {
 
         Button startGame = new Button ("Start Game!");
         Button exitGame = new Button ("Exit Game!");
+
+        Button twoPoints = new Button("2 Points");
+        Button threePoints = new Button ("3 Points");
+        Button fourPoints = new Button ("4 Points");
+        Button smudgePoints = new Button ("Smudge");
+        Button submit = new Button ("Submit");
 
         Button testButton = new Button ();
 
@@ -112,6 +119,15 @@ public class Main extends Application {
 
         exitGame.setOnAction(actionEvent -> Platform.exit());
 
+        twoPoints.setOnAction( (event -> { bid = 2;}));
+        threePoints.setOnAction( (event -> { bid = 3;}));
+        fourPoints.setOnAction( (event -> { bid = 4;}));
+        smudgePoints.setOnAction( (event -> { bid = 5;}));
+
+        submit.setOnAction( (event -> {
+            //Go to game;
+        }));
+
         //replace param with name of your own picture. Make sure
         //its in the src folder
         Image pic = new Image("file:src/pics/convolk.png");
@@ -134,8 +150,8 @@ public class Main extends Application {
         t.setTextAlignment(TextAlignment.CENTER);
         t.setText("Pitch Card Game");
 
-        Card jackOfHearts = new Card("J", 'H', "file:src/playingcards/JH.png", 10);
-        Card aceOfDiamonds = new Card("A", 'D', "file:src/playingcards/AD.png", 10);
+        //Card jackOfHearts = new Card("J", 'H', "file:src/playingcards/JH.png", 10);
+        //Card aceOfDiamonds = new Card("A", 'D', "file:src/playingcards/AD.png", 10);
         Deck deck = new Deck();
         deck.addAllCards();
         deck.shuffleDeck();
@@ -250,6 +266,8 @@ public class Main extends Application {
                     v2.setScaleX((double)j/180.0);
                 }
 
+
+
                 if (game.turn == 1)   {
                     /*
                     for (int i=0; i<p1.hand.cards.size(); i++)  {
@@ -259,26 +277,34 @@ public class Main extends Application {
                         }));
                     }
                     */
-                    // FIX: player cant make turn
                     if (p1.playCard(trickList)) {
                         System.out.println("Return true");
                         game.turn = 2;
                         p1.changeBoolButtonPress();
+                        gameStart = true;
+                        testTrick.updateTickList(gamePane, trickList);
                     }
                     //game.turn = 2;
                 }
                 else if (game.turn == 2)    {
                     AI.get(0).playCard(trickList);
+                    System.out.println("Bot played card");
+                    testTrick.updateTickList(gamePane, trickList);
+                    testTrick.removeTrickList(gamePane, trickList, p1);
                     if (AI.size() == 1) { game.turn = 1;}
                     else { game.turn = 3;}
                 }
                 else if (game.turn == 3)    {
                     AI.get(1).playCard(trickList);
+                    testTrick.updateTickList(gamePane, trickList);
+                    testTrick.removeTrickList(gamePane, trickList, p1);
                     if (AI.size() == 2) { game.turn = 1;}
                     else { game.turn = 4;}
                 }
                 else if (game.turn == 4)    {
                     AI.get(2).playCard(trickList);
+                    testTrick.updateTickList(gamePane, trickList);
+                    testTrick.removeTrickList(gamePane, trickList, p1);
                     game.turn = 1;
                 }
 
@@ -304,21 +330,9 @@ public class Main extends Application {
 
                 }
 
-                //if (p1.turn%3 == 0) { System.out.println("Moded turn: " + p1.turn);}
-                // Change this depending on the players and the round and shit
-                //if (trickList.size() == playerNum*2 && (p1.turn%3 == 0))
-                //if (p1.turn%(playerNum) == 0)
-
-                if (trickList.size() == playerNum)  {
-                    for (int i=0; i<1000000; i++)   {
-                        //System.out.println("lol");
-                    }
-                    gamePane.setCenter(null);
-                    trickList.clear();
-                    p1.changeBoolButtonPress2();
-                }
 
 
+                /* Replaced with updateTrickList
                 if (trickList.size() != 0) {
                     //FlowPane trickFlow = new FlowPane();
                     StackPane trickPane = new StackPane();
@@ -328,17 +342,31 @@ public class Main extends Application {
                         trickList.get(i).cardPic.setRotate(50*i);
                         trickPane.getChildren().add(trickList.get(i).cardPic);
                     }
-                    //gamePane.setCenter(flow);
-                    
                     gamePane.setCenter(trickPane);
-
                 }
+                */
+                /* Replaced with removeTrickList
+                if (trickList.size() == playerNum)  {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    gamePane.setCenter(null);
+                    trickList.clear();
+                    p1.changeBoolButtonPress2();
+                }
+                */
 
                 // This function will get the trump suit
-                if ((game.turn-1)%playerNum == 0 && gameStart)  {
+                // FIXXXX
+                /*
+                if ((game.turn-1)%playerNum == 0)  {
                     trump = trickList.get(0).suit;
                     System.out.println("Trump: " + trump);
                 }
+                */
 
 
 
