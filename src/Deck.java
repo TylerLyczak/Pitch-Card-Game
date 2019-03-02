@@ -31,13 +31,16 @@ public class Deck {
                 if ((srcOfCard.charAt(1) - '0') == 0)    {
                     cardRank = "" + srcOfCard.charAt(0) + "" + srcOfCard.charAt(1);
                     cardSuit = srcOfCard.charAt(2);
+                    //System.out.println("If, src: " + srcOfCard);
                 }   else   {
                     cardRank = "" + srcOfCard.charAt(0);
-                    srcOfCard.charAt(1);
+                    cardSuit = srcOfCard.charAt(1);
+                    //System.out.println("else, src: " + srcOfCard);
                 }
                 // Makes the child the right src of the file
                 String src = "file:" + child;
                 Card c1 = new Card (cardRank, cardSuit, src, Card.cardValue(cardRank));
+                //System.out.println("In Deck, suit: " + c1.suit);
                 cards.add(c1);
             }
         }

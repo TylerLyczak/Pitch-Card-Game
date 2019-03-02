@@ -227,6 +227,10 @@ public class Main extends Application {
 
         AnimationTimer gameloop = new AnimationTimer() {
             int i = 0;
+            char trump;
+            int round = 0;
+            boolean gameStart = false;
+
             @Override
             public void handle(long now) {
                 i++;
@@ -304,16 +308,17 @@ public class Main extends Application {
                 // Change this depending on the players and the round and shit
                 //if (trickList.size() == playerNum*2 && (p1.turn%3 == 0))
                 //if (p1.turn%(playerNum) == 0)
-                /*
+
                 if (trickList.size() == playerNum)  {
                     for (int i=0; i<1000000; i++)   {
-                        System.out.println("lol");
+                        //System.out.println("lol");
                     }
                     gamePane.setCenter(null);
                     trickList.clear();
                     p1.changeBoolButtonPress2();
                 }
-                */
+
+
                 if (trickList.size() != 0) {
                     //FlowPane trickFlow = new FlowPane();
                     StackPane trickPane = new StackPane();
@@ -327,6 +332,12 @@ public class Main extends Application {
                     
                     gamePane.setCenter(trickPane);
 
+                }
+
+                // This function will get the trump suit
+                if ((game.turn-1)%playerNum == 0 && gameStart)  {
+                    trump = trickList.get(0).suit;
+                    System.out.println("Trump: " + trump);
                 }
 
 
