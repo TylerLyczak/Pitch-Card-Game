@@ -26,4 +26,9 @@ public class Pitch extends Application {
         return flow;
     }
 
+    public void roundStart ()   {
+        String trump;
+
+    }
+
 }

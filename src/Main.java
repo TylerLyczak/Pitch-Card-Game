@@ -300,13 +300,21 @@ public class Main extends Application {
 
                 }
 
+                //if (p1.turn%3 == 0) { System.out.println("Moded turn: " + p1.turn);}
                 // Change this depending on the players and the round and shit
-                if (trickList.size() == playerNum && (p1.turn%3 == 0))  {
+                //if (trickList.size() == playerNum*2 && (p1.turn%3 == 0))
+                //if (p1.turn%(playerNum) == 0)
+                /*
+                if (trickList.size() == playerNum)  {
+                    for (int i=0; i<1000000; i++)   {
+                        System.out.println("lol");
+                    }
                     gamePane.setCenter(null);
                     trickList.clear();
                     p1.changeBoolButtonPress2();
                 }
-                else if (trickList.size() != 0) {
+                */
+                if (trickList.size() != 0) {
                     //FlowPane trickFlow = new FlowPane();
                     StackPane trickPane = new StackPane();
 
