@@ -24,6 +24,7 @@ public class Card {
     String srcOfBack = "file:src/playingcards/gray_back.png";
     int points;
     Image pic;
+    int playedBy;
     ImageView cardPic;
     Button cardButton;
 
@@ -63,7 +64,6 @@ public class Card {
             }
         });
         */
-
     }
 
     Card (Card c1) {
@@ -75,6 +75,14 @@ public class Card {
         cardPic = c1.cardPic;
         cardButton = c1.cardButton;
     }
+
+    public void setPlayedBy (int num) { playedBy = num;}
+
+    public int getPoints () { return points;}
+
+    public char getSuit ()  { return suit;}
+
+    public int getPlayedBy () { return playedBy;}
 
     public void makeButton()    {
         cardPic = new ImageView(pic);

@@ -40,7 +40,7 @@ public class Deck {
                 // Makes the child the right src of the file
                 String src = "file:" + child;
                 Card c1 = new Card (cardRank, cardSuit, src, Card.cardValue(cardRank));
-                //System.out.println("In Deck, suit: " + c1.suit);
+                //System.out.println("In Deck, points: " + c1.points);
                 cards.add(c1);
             }
         }

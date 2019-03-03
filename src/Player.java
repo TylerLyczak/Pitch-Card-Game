@@ -5,15 +5,16 @@ import java.util.ArrayList;
 
 public class Player {
     Deck hand;
-    ArrayList<Deck> trickList;
+    ArrayList<Card> trickDeck;
     int bid;
+    int points;
     boolean buttonPress;
     boolean buttonPress2;
     int turn;
 
     Player ()   {
         hand = new Deck();
-        trickList = new ArrayList<Deck>();
+        trickDeck = new ArrayList<Card>();
         buttonPress = false;
 
     }
@@ -31,6 +32,7 @@ public class Player {
                 public void handle(ActionEvent event) {
                     for (int i=0; i<hand.cards.size(); i++) {
                         if (hand.cards.get(i).cardButton == event.getSource())  {
+                            hand.cards.get(i).setPlayedBy(1);
                             System.out.println("YEEET");
                             //Update hbox
                             hand.cards.get(i).cardButton.setVisible(false);
@@ -40,6 +42,7 @@ public class Player {
                             buttonPress2 = true;
                             turn++;
                             System.out.println("Turn: " + turn);
+                            //System.out.println("points: " + trick.get(i).points);
                             System.out.println(buttonPress);
                             //return c1;
                             break;
@@ -60,6 +63,10 @@ public class Player {
     }
 
     public void changeBoolButtonPress2 () { buttonPress2 = false;}
+
+    public ArrayList<Card> getTrickDeck ()  { return trickDeck;}
+
+    public void incrementPoints (int amount)   { points += amount;}
 
     public static void actionPerformed (javafx.event.ActionEvent event) {
         System.out.println("wowwwwww");

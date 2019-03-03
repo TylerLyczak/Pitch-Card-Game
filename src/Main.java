@@ -29,7 +29,7 @@ public class Main extends Application {
     Stage myStage;
     Scene scene, scene2;
     //added
-    Scene gameScene;
+    Scene gameScene, bidScene;
     //
     HashMap<String, Scene> sceneMap;
     //added
@@ -37,6 +37,8 @@ public class Main extends Application {
     int playerNum = 2;
     int bid;
     ArrayList<AIPlayer> AI = new ArrayList<AIPlayer>();
+    Player p1 = new Player();
+    Pitch game = new Pitch();
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -59,6 +61,7 @@ public class Main extends Application {
         Button startGame = new Button ("Start Game!");
         Button exitGame = new Button ("Exit Game!");
 
+        Button passButton = new Button ("Pass");
         Button twoPoints = new Button("2 Points");
         Button threePoints = new Button ("3 Points");
         Button fourPoints = new Button ("4 Points");
@@ -108,7 +111,9 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Start game");
-                myStage.setScene(sceneMap.get("game"));
+                //myStage.setScene(sceneMap.get("game"));
+                myStage.setScene(sceneMap.get("bidScreen"));
+                game.setAmountOfPlayers(playerNum);
                 for (int i=0; i<playerNum-1; i++) {
                     AIPlayer bot = new AIPlayer();
                     AI.add(bot);
@@ -119,13 +124,15 @@ public class Main extends Application {
 
         exitGame.setOnAction(actionEvent -> Platform.exit());
 
-        twoPoints.setOnAction( (event -> { bid = 2;}));
-        threePoints.setOnAction( (event -> { bid = 3;}));
-        fourPoints.setOnAction( (event -> { bid = 4;}));
-        smudgePoints.setOnAction( (event -> { bid = 5;}));
+        passButton.setOnAction( (event -> { p1.bid = 1;}));
+        twoPoints.setOnAction( (event -> { p1.bid = 2;}));
+        threePoints.setOnAction( (event -> { p1.bid = 3;}));
+        fourPoints.setOnAction( (event -> { p1.bid = 4;}));
+        smudgePoints.setOnAction( (event -> { p1.bid = 5;}));
 
         submit.setOnAction( (event -> {
-            //Go to game;
+            myStage.setScene(sceneMap.get("game"));
+            game.roundStart = true;
         }));
 
         //replace param with name of your own picture. Make sure
@@ -182,19 +189,19 @@ public class Main extends Application {
         VBox paneCenter = new VBox(20, welcomeScreenText, v2, playerSelect, gameOptions);
         paneCenter.setAlignment(Pos.CENTER);
 
-        // DEALER
+        // Bid selection
+        BorderPane bidSelection = new BorderPane();
+        bidSelection.setPadding(new Insets(100));
+        HBox bidButtons = new HBox(10, passButton, twoPoints, threePoints, fourPoints, smudgePoints);
+        bidButtons.setAlignment(Pos.CENTER);
+        HBox sumbitBid = new HBox(10, submit);
+        VBox bidBoxes = new VBox(10, bidButtons, submit);
+        bidBoxes.setAlignment(Pos.CENTER);
 
 
-        Player p1 = new Player();
+
         p1.hand.cards = gameDealer.dealHand();
 
-        System.out.println(AI.size());
-/*
-        for (int i=0; i<AI.size(); i++) {
-            System.out.println("Getting cards");
-            AI.get(i).hand.cards = gameDealer.dealHand();
-        }
-        */
 
         HBox playerHand = new HBox (10);
 
@@ -203,32 +210,11 @@ public class Main extends Application {
 
         flow.setAlignment(Pos.CENTER);
         playerHand.setAlignment(Pos.BOTTOM_CENTER);
-        /*
-        for (int i=0; i<6; i++) {
-            playerHand.getChildren().add(p1.hand.cards.get(i).cardButton);
-        }
-        */
-        Pitch game = new Pitch();
+
+
         playerHand = game.updateHand(playerHand, p1);
-        //flow = game.updateHane2(flow, p1);
-
-/*
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException exc) {
-                throw new Error("Unexpected Interruption", exc);
-            }
-        });
-
-        thread.start();
-
-*/
 
         pane.setCenter(paneCenter);
-
-        ArrayList<Card> trickList = new ArrayList<Card>();
-
 
 
 
@@ -252,7 +238,6 @@ public class Main extends Application {
                 i++;
                 if(i == 360) i = 0;
                 v2.setRotate(i);
-                //testTrick.addCard(p1.playCard());
 
 
 
@@ -267,7 +252,13 @@ public class Main extends Application {
                 }
 
 
+                game.decideTrump();
 
+                if (game.trickList.size() == playerNum) {
+                    game.playerReceiveTrick(p1, AI, gamePane);
+                }
+
+                // Should replace all of this with a pitch command that decides the players turns based on the trick.
                 if (game.turn == 1)   {
                     /*
                     for (int i=0; i<p1.hand.cards.size(); i++)  {
@@ -277,34 +268,31 @@ public class Main extends Application {
                         }));
                     }
                     */
-                    if (p1.playCard(trickList)) {
+                    if (p1.playCard(game.trickList)) {
                         System.out.println("Return true");
                         game.turn = 2;
                         p1.changeBoolButtonPress();
                         gameStart = true;
-                        testTrick.updateTickList(gamePane, trickList);
+                        game.updateTickList(gamePane, game.trickList);
                     }
                     //game.turn = 2;
                 }
                 else if (game.turn == 2)    {
-                    AI.get(0).playCard(trickList);
+                    AI.get(0).playCard(game.trickList, 2);
                     System.out.println("Bot played card");
-                    testTrick.updateTickList(gamePane, trickList);
-                    testTrick.removeTrickList(gamePane, trickList, p1);
+                    game.updateTickList(gamePane, game.trickList);
                     if (AI.size() == 1) { game.turn = 1;}
                     else { game.turn = 3;}
                 }
                 else if (game.turn == 3)    {
-                    AI.get(1).playCard(trickList);
-                    testTrick.updateTickList(gamePane, trickList);
-                    testTrick.removeTrickList(gamePane, trickList, p1);
+                    AI.get(1).playCard(game.trickList, 3);
+                    game.updateTickList(gamePane, game.trickList);
                     if (AI.size() == 2) { game.turn = 1;}
                     else { game.turn = 4;}
                 }
                 else if (game.turn == 4)    {
-                    AI.get(2).playCard(trickList);
-                    testTrick.updateTickList(gamePane, trickList);
-                    testTrick.removeTrickList(gamePane, trickList, p1);
+                    AI.get(2).playCard(game.trickList, 4);
+                    game.updateTickList(gamePane, game.trickList);
                     game.turn = 1;
                 }
 
@@ -379,10 +367,12 @@ public class Main extends Application {
 
         scene = new Scene(pane, 800, 800);
         gameScene = new Scene(gamePane, 800, 800);
+        bidScene = new Scene (bidBoxes, 800, 800);
 
         sceneMap.put("welcome", scene);
         sceneMap.put("gamePlay", scene2);
         sceneMap.put("game", gameScene);
+        sceneMap.put ("bidScreen", bidScene);
 
         primaryStage.setScene(sceneMap.get("welcome"));
         primaryStage.show();
