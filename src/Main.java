@@ -258,6 +258,8 @@ public class Main extends Application {
                     game.playerReceiveTrick(p1, AI, gamePane);
                 }
 
+
+
                 // Should replace all of this with a pitch command that decides the players turns based on the trick.
                 if (game.turn == 1)   {
                     /*

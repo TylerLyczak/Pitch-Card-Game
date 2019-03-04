@@ -66,6 +66,8 @@ public class Player {
 
     public ArrayList<Card> getTrickDeck ()  { return trickDeck;}
 
+    public Deck getHand ()  { return hand;}
+
     public void incrementPoints (int amount)   { points += amount;}
 
     public static void actionPerformed (javafx.event.ActionEvent event) {

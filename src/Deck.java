@@ -94,5 +94,5 @@ public class Deck {
         System.out.println("wow");
     }
 
-
+    public ArrayList<Card> getCards() { return cards;}
 }

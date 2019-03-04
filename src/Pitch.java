@@ -160,6 +160,12 @@ public class Pitch extends Application {
         removeTrickList(p1, gamePane);
     }
 
+    public void calculateScore (Player p1, ArrayList<AIPlayer> AI)  {
+        if (p1.getHand().getCards().size() == 0)    {
+
+        }
+    }
+
 }
 
 
