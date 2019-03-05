@@ -199,7 +199,7 @@ public class Main extends Application {
         bidBoxes.setAlignment(Pos.CENTER);
 
 
-
+        // Gives player cards
         p1.hand.cards = gameDealer.dealHand();
 
 
@@ -212,7 +212,8 @@ public class Main extends Application {
         playerHand.setAlignment(Pos.BOTTOM_CENTER);
 
 
-        playerHand = game.updateHand(playerHand, p1);
+        // Updates hbox with card buttons
+        game.updateHand(playerHand, p1);
 
         pane.setCenter(paneCenter);
 
@@ -229,8 +230,6 @@ public class Main extends Application {
 
         AnimationTimer gameloop = new AnimationTimer() {
             int i = 0;
-            char trump;
-            int round = 0;
             boolean gameStart = false;
 
             @Override
@@ -238,9 +237,6 @@ public class Main extends Application {
                 i++;
                 if(i == 360) i = 0;
                 v2.setRotate(i);
-
-
-
 
                 if (i < 180) {
 
@@ -252,24 +248,46 @@ public class Main extends Application {
                 }
 
 
+
+                // Sees the first cards played and makes it trump
                 game.decideTrump();
 
                 if (game.trickList.size() == playerNum) {
                     game.playerReceiveTrick(p1, AI, gamePane);
                 }
 
+                // Checks if all the cards in each player has been played
+                // If it has, it will reset each players hand
+                if (game.checkRoundEnd(p1, AI)) {
+                    // Calculate the score of each players won tricks
+                    game.calculateScore(p1, AI);
+
+
+                    gameDealer.checkDeck(game.amountOfPlayers);
+
+
+
+                    p1.giveNewHand(gameDealer.dealHand());
+                    HBox newBox = new HBox(10);
+                    game.updateHand(newBox, p1);
+                    gamePane.setBottom(newBox);
+
+
+                    for (int i=0; i<AI.size(); i++) {
+                        AI.get(i).giveNewHand(gameDealer.dealHand());
+                    }
+
+                    // Calc the total points in each players trick deck
+                    // roundStart = true
+
+                }
+
+
+
 
 
                 // Should replace all of this with a pitch command that decides the players turns based on the trick.
                 if (game.turn == 1)   {
-                    /*
-                    for (int i=0; i<p1.hand.cards.size(); i++)  {
-                        p1.hand.cards.get(i).cardButton.setOnAction((e -> {
-                            p1.playCard(trickList);
-                            game.turn = 2;
-                        }));
-                    }
-                    */
                     if (p1.playCard(game.trickList)) {
                         System.out.println("Return true");
                         game.turn = 2;
@@ -277,7 +295,6 @@ public class Main extends Application {
                         gameStart = true;
                         game.updateTickList(gamePane, game.trickList);
                     }
-                    //game.turn = 2;
                 }
                 else if (game.turn == 2)    {
                     AI.get(0).playCard(game.trickList, 2);
@@ -297,66 +314,6 @@ public class Main extends Application {
                     game.updateTickList(gamePane, game.trickList);
                     game.turn = 1;
                 }
-
-                // Adds cards back into the players hand
-                if (p1.hand.cards.size() == 0)  {
-                    if (gameDealer.deckSize() < 6)  { gameDealer.dealerReset();}
-                    p1.hand.cards = gameDealer.dealHand();
-                    //gameScene = new Scene(gamePane, 800, 800);
-                    //playerHand = game.updateHand(playerHand, p1);
-                    HBox newBox = new HBox(10);
-                    newBox = game.updateHand(newBox, p1);
-                    newBox.setAlignment(Pos.BOTTOM_CENTER);
-                    gamePane.setBottom(newBox);
-                }
-
-                for (int i=0; i<AI.size(); i++) {
-                    if (gameDealer.deckSize() < 6) {
-                        gameDealer.dealerReset();
-                    }
-                    if (AI.get(i).hand.cards.size() == 0) {
-                        AI.get(i).hand.cards = gameDealer.dealHand();
-                    }
-
-                }
-
-
-
-                /* Replaced with updateTrickList
-                if (trickList.size() != 0) {
-                    //FlowPane trickFlow = new FlowPane();
-                    StackPane trickPane = new StackPane();
-
-                    for (int i=0; i<trickList.size(); i++)  {
-                        //flow.getChildren().add(trickList.get(i).cardPic);
-                        trickList.get(i).cardPic.setRotate(50*i);
-                        trickPane.getChildren().add(trickList.get(i).cardPic);
-                    }
-                    gamePane.setCenter(trickPane);
-                }
-                */
-                /* Replaced with removeTrickList
-                if (trickList.size() == playerNum)  {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    gamePane.setCenter(null);
-                    trickList.clear();
-                    p1.changeBoolButtonPress2();
-                }
-                */
-
-                // This function will get the trump suit
-                // FIXXXX
-                /*
-                if ((game.turn-1)%playerNum == 0)  {
-                    trump = trickList.get(0).suit;
-                    System.out.println("Trump: " + trump);
-                }
-                */
 
 
 

@@ -84,6 +84,8 @@ public class Card {
 
     public int getPlayedBy () { return playedBy;}
 
+    public String getRank ()    { return rank;}
+
     public void makeButton()    {
         cardPic = new ImageView(pic);
         cardPic.setFitHeight(500);
@@ -93,6 +95,7 @@ public class Card {
         cardButton.setGraphic(cardPic);
     }
 
+    // Used for calculating game point
     public static int cardValue (String rank)   {
         switch (rank)    {
             case "10":
@@ -110,6 +113,48 @@ public class Card {
         }
     }
 
+    // Helper function for cardSuitDecider, used for calculating high and low trump
+    public static int cardRank (String rank)   {
+        switch (rank)   {
+            case "A":
+                return 14;
+            case "K":
+                return 13;
+            case "Q":
+                return 12;
+            case "J":
+                return 11;
+            case "10":
+                return 10;
+            case "9":
+                return 9;
+            case "8":
+                return 8;
+            case "7":
+                return 7;
+            case "6":
+                return 6;
+            case "5":
+                return 5;
+            case "4":
+                return 4;
+            case "3":
+                return 3;
+            case "2":
+                return 2;
+            default:
+                return 0;
+        }
+    }
+
+    // Used for calculating high and low trump in calculateScore()
+    public static boolean cardSuitDecider (String rank1, String rank2)  {
+        if (rank1.equals(rank2))    { return false;}
+
+        if (cardRank(rank1) > cardRank(rank2))  { return false;}
+        else    { return true;}
+    }
+
     public Card removeAndReturn ()  {
         Card c1 = this;
         return c1;
@@ -118,6 +163,7 @@ public class Card {
     public void actionPerformed (javafx.event.ActionEvent event) {
         System.out.println("wow");
     }
+
 
 
 }

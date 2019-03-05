@@ -68,7 +68,12 @@ public class Player {
 
     public Deck getHand ()  { return hand;}
 
+    public void setHand (Deck newHand)  { hand = newHand;}
+
+    public void giveNewHand (ArrayList<Card> newHand)   { hand.setCards(newHand);}
+
     public void incrementPoints (int amount)   { points += amount;}
+
 
     public static void actionPerformed (javafx.event.ActionEvent event) {
         System.out.println("wowwwwww");

@@ -95,4 +95,6 @@ public class Deck {
     }
 
     public ArrayList<Card> getCards() { return cards;}
+
+    public void setCards (ArrayList<Card> newCards) { cards = newCards;}
 }

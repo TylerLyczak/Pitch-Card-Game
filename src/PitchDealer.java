@@ -15,14 +15,14 @@ public class PitchDealer implements DealerType{
 
     // This pulls 6 cards from the deck with a random number generator and adds it to an arraylist
     public ArrayList<Card> dealHand()   {
-        if (gameDealer.gameDeck.cards.size() < 6)   {
+        if (gameDealer.gameDeck.getCards().size() < 6)   {
             // Reload deck
             // Get rid of any remaining cards in anyones hand
         }
         ArrayList<Card> hand = new ArrayList<Card>();
         for (int i=0; i<6; i++) {
             // Gets a random number depending on the size of the deck.
-            int ranIndex = randomGenerator.nextInt(gameDealer.gameDeck.cards.size());
+            int ranIndex = randomGenerator.nextInt(gameDealer.gameDeck.getCards().size());
             Card c1 = gameDealer.gameDeck.drawCard();
             hand.add(c1);
         }
@@ -30,10 +30,17 @@ public class PitchDealer implements DealerType{
     }
 
     public int deckSize ()  {
-        return gameDealer.gameDeck.cards.size();
+        return gameDealer.gameDeck.getCards().size();
     }
 
     public void dealerReset ()  {
         gameDealer.gameDeck.resetDeck();
+    }
+
+
+    public void checkDeck (int playerNum)   {
+        if (gameDealer.gameDeck.getCards().size() < 6 || gameDealer.gameDeck.getCards().size() < playerNum)  {
+            dealerReset();
+        }
     }
 }
