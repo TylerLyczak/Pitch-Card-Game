@@ -29,7 +29,14 @@ public class AIPlayer extends Player {
     }
 
     public boolean playCard2 (ArrayList<Card> trickList, ArrayList<Character> suits, int bot)   {
-        
+        if (suits.size() != 0)  {
+            // change playable cards
+            for (int i=0; i<hand.getCards().size(); i++)    {
+
+            }
+        }
+
+
         return false;
     }
 
