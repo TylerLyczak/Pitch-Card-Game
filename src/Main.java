@@ -68,6 +68,10 @@ public class Main extends Application {
         Button smudgePoints = new Button ("Smudge");
         Button submit = new Button ("Submit");
 
+        Button newGame = new Button("New Game");
+        Button exitInGame = new Button("Exit Game");
+        Button playNextHand = new Button("Play Next Hand");
+
         Button testButton = new Button ();
 
 
@@ -111,8 +115,8 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Start game");
-                //myStage.setScene(sceneMap.get("game"));
-                myStage.setScene(sceneMap.get("bidScreen"));
+                myStage.setScene(sceneMap.get("game"));
+                //myStage.setScene(sceneMap.get("bidScreen"));
                 game.setAmountOfPlayers(playerNum);
                 for (int i=0; i<playerNum-1; i++) {
                     AIPlayer bot = new AIPlayer();
@@ -124,16 +128,18 @@ public class Main extends Application {
 
         exitGame.setOnAction(actionEvent -> Platform.exit());
 
-        passButton.setOnAction( (event -> { p1.bid = 1;}));
-        twoPoints.setOnAction( (event -> { p1.bid = 2;}));
-        threePoints.setOnAction( (event -> { p1.bid = 3;}));
-        fourPoints.setOnAction( (event -> { p1.bid = 4;}));
-        smudgePoints.setOnAction( (event -> { p1.bid = 5;}));
+        passButton.setOnAction( (event -> { p1.setBid(1);}));
+        twoPoints.setOnAction( (event -> { p1.setBid(2);}));
+        threePoints.setOnAction( (event -> { p1.setBid(3);}));
+        fourPoints.setOnAction( (event -> { p1.setBid(4);}));
+        smudgePoints.setOnAction( (event -> { p1.setBid(5);}));
 
-        submit.setOnAction( (event -> {
-            myStage.setScene(sceneMap.get("game"));
-            game.roundStart = true;
+        newGame.setOnAction( (event -> {
+            // Action to reset game and go to bid screen
         }));
+
+        exitInGame.setOnAction( (event -> { myStage.setScene(sceneMap.get("welcome"));}));
+
 
         //replace param with name of your own picture. Make sure
         //its in the src folder
@@ -190,13 +196,18 @@ public class Main extends Application {
         paneCenter.setAlignment(Pos.CENTER);
 
         // Bid selection
-        BorderPane bidSelection = new BorderPane();
-        bidSelection.setPadding(new Insets(100));
+        //BorderPane bidSelection = new BorderPane();
+        //bidSelection.setPadding(new Insets(100));
         HBox bidButtons = new HBox(10, passButton, twoPoints, threePoints, fourPoints, smudgePoints);
         bidButtons.setAlignment(Pos.CENTER);
-        HBox sumbitBid = new HBox(10, submit);
         VBox bidBoxes = new VBox(10, bidButtons, submit);
         bidBoxes.setAlignment(Pos.CENTER);
+
+        gamePane.setCenter(bidBoxes);
+
+        // In-game Buttons
+        HBox inGameButtons = new HBox(50, newGame, playNextHand, exitInGame);
+        inGameButtons.setAlignment(Pos.CENTER);
 
 
         // Gives player cards
@@ -221,12 +232,35 @@ public class Main extends Application {
 
         //added
         gamePane.setBottom(playerHand);
+        gamePane.setTop(inGameButtons);
 
         //gamePane.setBottom(flow);
         Trick testTrick = new Trick();
+
+        submit.setOnAction( (event -> {
+            gamePane.setCenter(null);
+            int highBid = p1.getBid();
+            for (int i=0; i<AI.size(); i++) {
+                AI.get(i).makeBid(highBid);
+                if (AI.get(i).getBid() > highBid)   {
+                    highBid = AI.get(i).getBid();
+                }
+            }
+
+            System.out.println("Player bid: " + p1.getBid());
+            for (int i=0; i<AI.size(); i++) {
+                System.out.println("AI num: " + i + " bid: " + AI.get(i).getBid());
+            }
+
+            p1.changeCardDisability(true);
+            gameDealer.setGameStart(true);
+            game.setRoundEnd(false);
+            game.setRoundBid(true);
+            //game.setRoundStart(true);
+
+        }));
         //gamePane.setCenter(flow);
 
-        game.turn = 1;
 
         AnimationTimer gameloop = new AnimationTimer() {
             int i = 0;
@@ -247,13 +281,26 @@ public class Main extends Application {
                     v2.setScaleX((double)j/180.0);
                 }
 
-
+                //System.out.println("Turn: " + game.getTurn());
+                // Determines the first turn after bids are made
+                if (game.determineFirstTurn(p1, AI) != 5 && game.getRoundBid())   {
+                    game.setTurn(game.determineFirstTurn(p1, AI));
+                    game.setRoundBid(false);
+                    game.setRoundStart(true);
+                    game.roundMiddle = true;
+                }
 
                 // Sees the first cards played and makes it trump
                 game.decideTrump();
 
+                game.updatePlayerHand(p1);
+
+
+
                 if (game.trickList.size() == playerNum) {
-                    game.playerReceiveTrick(p1, AI, gamePane);
+                    game.setTurn(game.playerReceiveTrick(p1, AI, gamePane));
+                    game.clearSuitsPlayed();
+                    game.addTrumpSuitsPlayed();
                 }
 
                 // Checks if all the cards in each player has been played
@@ -262,9 +309,10 @@ public class Main extends Application {
                     // Calculate the score of each players won tricks
                     game.calculateScore(p1, AI);
 
+                    // Check if a player has 7 points
+                    // If multiple players do, then display winner and button back to home screen
 
                     gameDealer.checkDeck(game.amountOfPlayers);
-
 
 
                     p1.giveNewHand(gameDealer.dealHand());
@@ -277,42 +325,19 @@ public class Main extends Application {
                         AI.get(i).giveNewHand(gameDealer.dealHand());
                     }
 
+                    game.clearSuitsPlayed();
                     // Calc the total points in each players trick deck
                     // roundStart = true
-
                 }
 
+                if (game.getRoundEnd())  {
+                    gamePane.setCenter(bidBoxes);
+                    game.clearSuitsPlayed();
+                    //myStage.setScene(sceneMap.get(bidSelection));
 
-
-
-
-                // Should replace all of this with a pitch command that decides the players turns based on the trick.
-                if (game.turn == 1)   {
-                    if (p1.playCard(game.trickList)) {
-                        System.out.println("Return true");
-                        game.turn = 2;
-                        p1.changeBoolButtonPress();
-                        gameStart = true;
-                        game.updateTickList(gamePane, game.trickList);
-                    }
                 }
-                else if (game.turn == 2)    {
-                    AI.get(0).playCard(game.trickList, 2);
-                    System.out.println("Bot played card");
-                    game.updateTickList(gamePane, game.trickList);
-                    if (AI.size() == 1) { game.turn = 1;}
-                    else { game.turn = 3;}
-                }
-                else if (game.turn == 3)    {
-                    AI.get(1).playCard(game.trickList, 3);
-                    game.updateTickList(gamePane, game.trickList);
-                    if (AI.size() == 2) { game.turn = 1;}
-                    else { game.turn = 4;}
-                }
-                else if (game.turn == 4)    {
-                    AI.get(2).playCard(game.trickList, 4);
-                    game.updateTickList(gamePane, game.trickList);
-                    game.turn = 1;
+                else    {
+                    game.gameTurn (p1, AI, gamePane);
                 }
 
 
@@ -326,12 +351,11 @@ public class Main extends Application {
 
         scene = new Scene(pane, 800, 800);
         gameScene = new Scene(gamePane, 800, 800);
-        bidScene = new Scene (bidBoxes, 800, 800);
 
         sceneMap.put("welcome", scene);
         sceneMap.put("gamePlay", scene2);
         sceneMap.put("game", gameScene);
-        sceneMap.put ("bidScreen", bidScene);
+        //sceneMap.put ("bidScreen", bidScene);
 
         primaryStage.setScene(sceneMap.get("welcome"));
         primaryStage.show();

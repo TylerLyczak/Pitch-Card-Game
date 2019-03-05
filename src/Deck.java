@@ -41,6 +41,8 @@ public class Deck {
                 String src = "file:" + child;
                 Card c1 = new Card (cardRank, cardSuit, src, Card.cardValue(cardRank));
                 //System.out.println("In Deck, points: " + c1.points);
+                c1.getCardButton().setDisable(true);
+                //System.out.println("Card suit: " + c1.getSuit());
                 cards.add(c1);
             }
         }

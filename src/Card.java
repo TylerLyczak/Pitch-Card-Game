@@ -86,6 +86,8 @@ public class Card {
 
     public String getRank ()    { return rank;}
 
+    public Button getCardButton ()    { return cardButton;}
+
     public void makeButton()    {
         cardPic = new ImageView(pic);
         cardPic.setFitHeight(500);

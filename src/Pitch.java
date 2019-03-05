@@ -13,19 +13,26 @@ public class Pitch extends Application {
     boolean roundStart;
     boolean roundEnd;
     boolean roundMiddle;
+    boolean roundBid;
+    boolean botBid;
     Card roundCard;
     char trump;
     // Middle pile in the game. Decides trump and is cleared after turns are done
     ArrayList<Card> trickList;
     int amountOfPlayers;
     int playerWentFirst;
+    int trickWinner;
+    ArrayList<Character> suitsPlayed;
 
 
     Pitch ()    {
         trickList = new ArrayList<Card>();
+        suitsPlayed = new ArrayList<Character>();
         roundStart = false;
         roundMiddle = false;
         roundEnd = false;
+        roundBid = false;
+        turn = 0;
     }
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -33,6 +40,23 @@ public class Pitch extends Application {
     }
 
     public void setAmountOfPlayers (int num) { amountOfPlayers = num;}
+
+    public void setRoundStart (boolean start)    { roundStart = start;}
+
+    public void setRoundEnd (boolean end)   { roundEnd = end;}
+
+    public void setRoundBid (boolean bidBool)   { roundBid = bidBool;}
+
+    public void setTurn (int turnNum)   { turn = turnNum;}
+
+    public boolean getRoundStart ()    { return roundStart;}
+
+    public boolean getRoundEnd ()   { return roundEnd;}
+
+    public boolean getRoundBid ()   { return roundBid;}
+
+    public int getTurn ()  { return turn;}
+
 
     // Updates the HBox of the players hand with the cards
     public void updateHand (HBox hand, Player p1)   {
@@ -49,11 +73,6 @@ public class Pitch extends Application {
             flow.getChildren().add(p1.hand.cards.get(i).cardButton);
         }
         return flow;
-    }
-
-    public void roundStart ()   {
-        String trump;
-
     }
 
     // Updates the middle pile with the cards played by the players
@@ -76,6 +95,7 @@ public class Pitch extends Application {
             e.printStackTrace();
         }
         */
+
         //gamePane.setLeft(trickPane);
     }
 
@@ -136,7 +156,8 @@ public class Pitch extends Application {
         }
     }
 
-    public void playerReceiveTrick (Player p1, ArrayList<AIPlayer> AI, BorderPane gamePane)   {
+    // Gives the winner of that turn the trick
+    public int playerReceiveTrick (Player p1, ArrayList<AIPlayer> AI, BorderPane gamePane)   {
         int winner = decideTrick();
 
         // Human player case
@@ -152,13 +173,27 @@ public class Pitch extends Application {
             }
         }
 
+
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+
         removeTrickList(p1, gamePane);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+
+        //System.out.println("Winner: " + winner);
+        trickWinner = winner;
+        return winner;
     }
 
     public boolean checkRoundEnd (Player p1, ArrayList<AIPlayer> AI)   {
@@ -191,7 +226,9 @@ public class Pitch extends Application {
         else    { return false;}
     }
 
+    // Calculates the final score of each players trick with there bids
     public void calculateScore (Player p1, ArrayList<AIPlayer> AI)  {
+
         // Calculate game point
         // For player
         ArrayList<Integer> gamePointList = new ArrayList<Integer>();
@@ -216,11 +253,28 @@ public class Pitch extends Application {
         }
 
         // Calculates who gets the game point
-        int gamePointPlayer = 0;
+        // This test if two players got the game point
+        int highPoint = gamePointList.get(0);
+        int highIndex = 0;
+        boolean twoWinners = false;
         for (int i=0; i<gamePointList.size(); i++)  {
-            if (gamePointList.get(i) > gamePointList.get(gamePointPlayer))  {
-                gamePointPlayer = i;
+            if (gamePointList.get(i) > highPoint)   {
+                highPoint = gamePointList.get(i);
+                highIndex = i;
             }
+        }
+        for (int i=0; i<gamePointList.size(); i++)  {
+            if (highIndex == i) {
+                continue;
+            }
+            else if (highPoint == gamePointList.get(i)) {
+                twoWinners = true;
+                break;
+            }
+        }
+        int gamePointPlayer = 5;
+        if (!twoWinners) {
+            gamePointPlayer = highIndex;
         }
 
 
@@ -304,41 +358,149 @@ public class Pitch extends Application {
             }
         }
 
-        // Gives the points to each player
-        // FIXXXXXXXX
-        // Make it work with bidding
-        if (gamePointPlayer == 0)   {
-            p1.incrementPoints(1);
+        // Gives the point to each player, incrementing there temp points
+        if (gamePointPlayer == 5)   { /* No-one gets the point*/}
+        else if (gamePointPlayer == 0)   {
+            p1.incrementTempPoints(1);
         }
         else    {
-            AI.get(gamePointPlayer-1).incrementPoints(1);
+            AI.get(gamePointPlayer-1).incrementTempPoints(1);
         }
 
         if (playerHigh == 0) {
-            p1.incrementPoints(1);
+            p1.incrementTempPoints(1);
         }
-        else    { AI.get(playerHigh-1).incrementPoints(1);}
+        else    { AI.get(playerHigh-1).incrementTempPoints(1);}
 
         if (playerLow == 0) {
-            p1.incrementPoints(1);
+            p1.incrementTempPoints(1);
         }
-        else    { AI.get(playerLow-1).incrementPoints(1);}
+        else    { AI.get(playerLow-1).incrementTempPoints(1);}
 
-        if (playerJack == 5)    {
-            // Nothing
-        }
+        if (playerJack == 5)    { /* No-one gets the point*/}
         else if (playerJack == 0)   {
-            p1.incrementPoints(1);
+            p1.incrementTempPoints(1);
         }
         else if (playerJack > 0 && playerJack < 5)  {
-            AI.get(playerJack-1).incrementPoints(1);
+            AI.get(playerJack-1).incrementTempPoints(1);
         }
+
+        // Calculates if the players got greater than or equal to their bid
+        if (p1.getTempPoints() < p1.getBid())   {
+            p1.decrementPoints(p1.getBid());
+        }
+        else    {
+            p1.incrementPoints(p1.getBid());
+        }
+        for (int i=0; i<AI.size(); i++) {
+            if (AI.get(i).getTempPoints() < AI.get(i).getBid()) {
+                AI.get(i).decrementPoints(AI.get(i).getBid());
+            }
+            else    {
+                AI.get(i).incrementPoints(AI.get(i).getTempPoints());
+            }
+        }
+        // Resets all the temp points used to calculate there score
+        p1.resetTempPoints();
+        for (int i=0; i<AI.size(); i++) {
+            AI.get(i).resetTempPoints();
+        }
+
 
         System.out.println("Person Score: " + p1.points);
 
         for (int i=0; i<AI.size(); i++) {
             System.out.println("Bot " + i + " Score: " + AI.get(i).points);
         }
+    }
+
+    public int determineFirstTurn (Player p1, ArrayList<AIPlayer> AI)   {
+        int highPlayer = 1;
+        int highestBid = 0;
+        highestBid = p1.getBid();
+
+        for (int i=0; i<AI.size(); i++) {
+            if (AI.get(i).getBid() > highestBid)    {
+                highestBid = AI.get(i).getBid();
+                highPlayer = i+2;
+            }
+        }
+
+        return highPlayer;
+
+    }
+
+    public boolean gameTurn (Player p1, ArrayList<AIPlayer> AI, BorderPane gamePane)    {
+        if (!roundMiddle)   { return false;}
+        if (turn == 1)  {
+            if (p1.playCard(trickList)) {
+                updateTickList(gamePane, trickList);
+                updateSuitsPlayed();
+                turn = 2;
+                return true;
+            }
+            else    { return false;}
+        }
+        else if (turn == 2) {
+            AI.get(0).playCard(trickList, 2);
+            updateTickList(gamePane, trickList);
+            updateSuitsPlayed();
+            if (AI.size() == 1) {
+                turn = 1;
+                return true;
+            }
+            else {
+                turn = 3;
+                return true;
+            }
+        }
+        else if (turn == 3) {
+            AI.get(1).playCard(trickList, 3);
+            updateTickList(gamePane, trickList);
+            updateSuitsPlayed();
+            if (AI.size() == 2) { turn = 1; return true;}
+            else { turn = 4; return true;}
+        }
+        else if (turn == 4) {
+            AI.get(2).playCard(trickList, 4);
+            updateTickList(gamePane, trickList);
+            updateSuitsPlayed();
+            turn = 1;
+            return true;
+        }
+        return false;
+    }
+
+    // Adds any suit that is played into the list
+    public void updateSuitsPlayed ()    {
+        for (int i=0; i<trickList.size(); i++)    {
+            if (!suitsPlayed.contains(trickList.get(i).getSuit()))  {
+                suitsPlayed.add(trickList.get(i).getSuit());
+            }
+        }
+    }
+
+    // Clears the suit array list
+    public void clearSuitsPlayed () { suitsPlayed.clear();}
+
+    public void addTrumpSuitsPlayed ()  {suitsPlayed.add(trump);}
+
+    // Changes the players hand to the suits that were played
+    public void updatePlayerHand (Player p1) {
+        boolean changed = false;
+        p1.changeCardDisability(true);
+        for (int i=0; i<p1.getHand().getCards().size(); i++)    {
+            for (int j=0; j<suitsPlayed.size(); j++)    {
+                if (p1.getHand().getCards().get(i).getSuit() == suitsPlayed.get(j)) {
+                    p1.getHand().getCards().get(i).getCardButton().setDisable(false);
+                    changed = true;
+                }
+            }
+        }
+        // If the player has no cards of the suits played, the player can play any card
+        if (!changed)   { p1.changeCardDisability(false);}
+
+        if (trickWinner == 1)    { p1.changeCardDisability(false);}
     }
 
 

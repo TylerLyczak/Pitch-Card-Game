@@ -5,11 +5,13 @@ public class PitchDealer implements DealerType{
 
     Dealer gameDealer;
     Random randomGenerator;
+    boolean gameStart;
 
     @Override
     public Dealer createDealer() {
         gameDealer.gameDeck.startDeck();
         randomGenerator = new Random();
+        gameStart = false;
         return gameDealer;
     }
 
@@ -24,6 +26,9 @@ public class PitchDealer implements DealerType{
             // Gets a random number depending on the size of the deck.
             int ranIndex = randomGenerator.nextInt(gameDealer.gameDeck.getCards().size());
             Card c1 = gameDealer.gameDeck.drawCard();
+            if (!gameStart) {
+                c1.getCardButton().setDisable(true);
+            }
             hand.add(c1);
         }
         return hand;
@@ -43,4 +48,6 @@ public class PitchDealer implements DealerType{
             dealerReset();
         }
     }
+
+    public void setGameStart (boolean start)    { gameStart = start;}
 }
