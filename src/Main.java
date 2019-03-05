@@ -79,8 +79,6 @@ public class Main extends Application {
 
 
 
-
-
         btn.setOnAction(new EventHandler<ActionEvent>(){
 
             public void handle(ActionEvent event){
@@ -161,12 +159,8 @@ public class Main extends Application {
         t.setFont(new Font(50));
         t.setWrappingWidth(500);
         t.setTextAlignment(TextAlignment.CENTER);
-        t.setText("Pitch Card Game");
+        t.setText("M A M A");
 
-
-        //Deck deck = new Deck();
-        //deck.addAllCards();
-        //deck.shuffleDeck();
 
         btn.setGraphic(v);
         //added
@@ -229,11 +223,16 @@ public class Main extends Application {
         submit.setOnAction( (event -> {
             gamePane.setCenter(null);
             int highBid = p1.getBid();
+            ArrayList<Integer> bidNums = new ArrayList<Integer>();
+            bidNums.add(highBid);
             for (int i=0; i<AI.size(); i++) {
+                /*
                 AI.get(i).makeBid(highBid);
                 if (AI.get(i).getBid() > highBid)   {
                     highBid = AI.get(i).getBid();
                 }
+                */
+                AI.get(i).determineBid(bidNums);
             }
 
             System.out.println("Player bid: " + p1.getBid());
@@ -328,9 +327,6 @@ public class Main extends Application {
                 if (game.checkRoundEnd(p1, AI)) {
                     // Calculate the score of each players won tricks
                     game.calculateScore(p1, AI);
-
-                    // Check if a player has 7 points
-                    // If multiple players do, then display winner and button back to home screen
 
                     gameDealer.checkDeck(game.amountOfPlayers);
 

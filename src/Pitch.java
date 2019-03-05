@@ -386,15 +386,22 @@ public class Pitch extends Application {
         }
 
         // Calculates if the players got greater than or equal to their bid
-        if (p1.getTempPoints() < p1.getBid())   {
+        // If they bidded one and got one point, players will receive that point
+        if (p1.getTempPoints() < p1.getBid() && p1.getBid() != 1)   {
             p1.decrementPoints(p1.getBid());
+        }
+        else if (p1.getBid() == p1.getTempPoints()) {
+            p1.incrementPoints(1);
         }
         else    {
             p1.incrementPoints(p1.getBid());
         }
         for (int i=0; i<AI.size(); i++) {
-            if (AI.get(i).getTempPoints() < AI.get(i).getBid()) {
+            if (AI.get(i).getTempPoints() < AI.get(i).getBid() && AI.get(i).getBid() != 1) {
                 AI.get(i).decrementPoints(AI.get(i).getBid());
+            }
+            else if (AI.get(i).getBid() == AI.get(i).getTempPoints()) {
+                AI.get(i).incrementPoints(1);
             }
             else    {
                 AI.get(i).incrementPoints(AI.get(i).getTempPoints());
@@ -414,6 +421,7 @@ public class Pitch extends Application {
         }
     }
 
+    // Determines who goes first depending on their bid
     public int determineFirstTurn (Player p1, ArrayList<AIPlayer> AI)   {
         int highPlayer = 1;
         int highestBid = 0;
@@ -425,11 +433,11 @@ public class Pitch extends Application {
                 highPlayer = i+2;
             }
         }
-
         return highPlayer;
 
     }
 
+    // Keeps track of whos turn it is and allows them to make that turn
     public boolean gameTurn (Player p1, ArrayList<AIPlayer> AI, BorderPane gamePane)    {
         if (!roundMiddle)   { return false;}
         if (turn == 1)  {
@@ -530,6 +538,7 @@ public class Pitch extends Application {
         return winners;
     }
 
+    // Makes the winner scene depending who got the 7 points
     public Scene makeWinnerScene (ArrayList<Integer> winners, HashMap<String, Scene> sceneMap, Stage myStage, Button exitWinner)   {
         Text t = new Text();
         t.setFont(new Font(50));
