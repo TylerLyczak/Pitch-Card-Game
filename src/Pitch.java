@@ -75,13 +75,6 @@ public class Pitch extends Application {
         hand.setAlignment(Pos.BOTTOM_CENTER);
     }
 
-    public FlowPane updateHand2 (FlowPane flow, Player p1)  {
-        for (int i=0; i<6; i++) {
-            flow.getChildren().add(p1.hand.cards.get(i).cardButton);
-        }
-        return flow;
-    }
-
     // Updates the middle pile with the cards played by the players
     public void updateTickList (BorderPane gamePane, ArrayList<Card> trickList)   {
         //FlowPane trickFlow = new FlowPane();

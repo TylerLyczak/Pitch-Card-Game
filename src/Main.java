@@ -37,8 +37,10 @@ public class Main extends Application {
     int playerNum = 2;
     int bid;
     ArrayList<AIPlayer> AI = new ArrayList<AIPlayer>();
+    PitchDealer gameDealer = new PitchDealer();
     Player p1 = new Player();
     Pitch game = new Pitch();
+    AnimationTimer gameLoop;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -48,8 +50,6 @@ public class Main extends Application {
         text = new TextField();
         btn = new Button();
         sceneMap = new HashMap<String, Scene>();
-
-        PitchDealer gameDealer = new PitchDealer();
         gameDealer.createDealer();
 
 
@@ -116,9 +116,7 @@ public class Main extends Application {
         startGame.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Start game");
                 myStage.setScene(sceneMap.get("game"));
-                //myStage.setScene(sceneMap.get("bidScreen"));
                 game.setAmountOfPlayers(playerNum);
                 for (int i=0; i<playerNum-1; i++) {
                     AIPlayer bot = new AIPlayer();
@@ -139,10 +137,6 @@ public class Main extends Application {
         newGame.setOnAction( (event -> {
             // Action to reset game and go to bid screen
         }));
-
-        exitInGame.setOnAction( (event -> { myStage.setScene(sceneMap.get("welcome"));}));
-
-        exitWinner.setOnAction( (event -> { myStage.setScene(sceneMap.get("welcome"));}));
 
 
 
@@ -169,12 +163,10 @@ public class Main extends Application {
         t.setTextAlignment(TextAlignment.CENTER);
         t.setText("Pitch Card Game");
 
-        //Card jackOfHearts = new Card("J", 'H', "file:src/playingcards/JH.png", 10);
-        //Card aceOfDiamonds = new Card("A", 'D', "file:src/playingcards/AD.png", 10);
-        Deck deck = new Deck();
-        deck.addAllCards();
-        deck.shuffleDeck();
-        //Card c1 = deck.drawCard();
+
+        //Deck deck = new Deck();
+        //deck.addAllCards();
+        //deck.shuffleDeck();
 
         btn.setGraphic(v);
         //added
@@ -202,8 +194,6 @@ public class Main extends Application {
         paneCenter.setAlignment(Pos.CENTER);
 
         // Bid selection
-        //BorderPane bidSelection = new BorderPane();
-        //bidSelection.setPadding(new Insets(100));
         HBox bidButtons = new HBox(10, passButton, twoPoints, threePoints, fourPoints, smudgePoints);
         bidButtons.setAlignment(Pos.CENTER);
         VBox bidBoxes = new VBox(10, bidButtons, submit);
@@ -217,15 +207,11 @@ public class Main extends Application {
 
 
         // Gives player cards
-        p1.hand.cards = gameDealer.dealHand();
+        //p1.hand.cards = gameDealer.dealHand();
+        p1.getHand().setCards(gameDealer.dealHand());
 
 
         HBox playerHand = new HBox (10);
-
-
-        FlowPane flow = new FlowPane();
-
-        flow.setAlignment(Pos.CENTER);
         playerHand.setAlignment(Pos.BOTTOM_CENTER);
 
 
@@ -235,13 +221,10 @@ public class Main extends Application {
         pane.setCenter(paneCenter);
 
 
-
         //added
         gamePane.setBottom(playerHand);
         gamePane.setTop(inGameButtons);
 
-        //gamePane.setBottom(flow);
-        Trick testTrick = new Trick();
 
         submit.setOnAction( (event -> {
             gamePane.setCenter(null);
@@ -262,13 +245,44 @@ public class Main extends Application {
             gameDealer.setGameStart(true);
             game.setRoundEnd(false);
             game.setRoundBid(true);
-            //game.setRoundStart(true);
 
         }));
-        //gamePane.setCenter(flow);
+
+        exitWinner.setOnAction( (event -> {
+            gameLoop.stop();
+            p1 = new Player();
+            game = new Pitch();
+            AI = new ArrayList<AIPlayer>();
+            gameDealer = new PitchDealer();
+            gameDealer.createDealer();
+            p1.getHand().setCards(gameDealer.dealHand());
+            myStage.setScene(sceneMap.get("welcome"));
+            gamePane.setCenter(bidBoxes);
+            // Updates hbox with card buttons
+            playerHand.getChildren().clear();
+            game.updateHand(playerHand, p1);
+            gameLoop.start();
+        }));
 
 
-        AnimationTimer gameloop = new AnimationTimer() {
+        exitInGame.setOnAction( (event -> {
+            gameLoop.stop();
+            p1 = new Player();
+            game = new Pitch();
+            AI = new ArrayList<AIPlayer>();
+            gameDealer = new PitchDealer();
+            gameDealer.createDealer();
+            p1.getHand().setCards(gameDealer.dealHand());
+            myStage.setScene(sceneMap.get("welcome"));
+            gamePane.setCenter(bidBoxes);
+            // Updates hbox with card buttons
+            playerHand.getChildren().clear();
+            game.updateHand(playerHand, p1);
+            gameLoop.start();
+        }));
+
+
+        gameLoop = new AnimationTimer() {
             int i = 0;
             boolean gameStart = false;
 
@@ -332,8 +346,6 @@ public class Main extends Application {
                     }
 
                     game.clearSuitsPlayed();
-                    // Calc the total points in each players trick deck
-                    // roundStart = true
                 }
 
                 if (game.getRoundEnd())  {
@@ -349,16 +361,15 @@ public class Main extends Application {
                 if (game.isWinner(p1, AI))  {
                     ArrayList<Integer> winners = game.determineWinner(p1, AI);
                     winnerScene = game.makeWinnerScene(winners, sceneMap, myStage, exitWinner);
-                    //myStage.setScene(sceneMap.get("winnerScreen"));
-                    //gameloop.stop();
+                    sceneMap.put("winnerScreen", winnerScene);
+                    myStage.setScene(sceneMap.get("winnerScreen"));
+                    gameLoop.stop();
                 }
 
             }
         };
-        gameloop.start();
+        gameLoop.start();
 
-        //ArrayList<Integer> winners = game.determineWinner(p1, AI);
-        //winnerScene = game.makeWinnerScene(winners, sceneMap, myStage, exitWinner);
 
         scene = new Scene(pane, 800, 800);
         gameScene = new Scene(gamePane, 800, 800);
@@ -367,7 +378,6 @@ public class Main extends Application {
         sceneMap.put("gamePlay", scene2);
         sceneMap.put("game", gameScene);
         sceneMap.put("winnerScreen", winnerScene);
-        //sceneMap.put ("bidScreen", bidScene);
 
         primaryStage.setScene(sceneMap.get("welcome"));
         primaryStage.show();
