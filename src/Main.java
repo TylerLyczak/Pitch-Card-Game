@@ -29,7 +29,7 @@ public class Main extends Application {
     Stage myStage;
     Scene scene, scene2;
     //added
-    Scene gameScene, bidScene;
+    Scene gameScene, winnerScene;
     //
     HashMap<String, Scene> sceneMap;
     //added
@@ -71,6 +71,8 @@ public class Main extends Application {
         Button newGame = new Button("New Game");
         Button exitInGame = new Button("Exit Game");
         Button playNextHand = new Button("Play Next Hand");
+
+        Button exitWinner = new Button("Exit to Main Menu");
 
         Button testButton = new Button ();
 
@@ -139,6 +141,10 @@ public class Main extends Application {
         }));
 
         exitInGame.setOnAction( (event -> { myStage.setScene(sceneMap.get("welcome"));}));
+
+        exitWinner.setOnAction( (event -> { myStage.setScene(sceneMap.get("welcome"));}));
+
+
 
 
         //replace param with name of your own picture. Make sure
@@ -340,14 +346,19 @@ public class Main extends Application {
                     game.gameTurn (p1, AI, gamePane);
                 }
 
-
-
-                // Render
+                if (game.isWinner(p1, AI))  {
+                    ArrayList<Integer> winners = game.determineWinner(p1, AI);
+                    winnerScene = game.makeWinnerScene(winners, sceneMap, myStage, exitWinner);
+                    //myStage.setScene(sceneMap.get("winnerScreen"));
+                    //gameloop.stop();
+                }
 
             }
         };
         gameloop.start();
 
+        //ArrayList<Integer> winners = game.determineWinner(p1, AI);
+        //winnerScene = game.makeWinnerScene(winners, sceneMap, myStage, exitWinner);
 
         scene = new Scene(pane, 800, 800);
         gameScene = new Scene(gamePane, 800, 800);
@@ -355,6 +366,7 @@ public class Main extends Application {
         sceneMap.put("welcome", scene);
         sceneMap.put("gamePlay", scene2);
         sceneMap.put("game", gameScene);
+        sceneMap.put("winnerScreen", winnerScene);
         //sceneMap.put ("bidScreen", bidScene);
 
         primaryStage.setScene(sceneMap.get("welcome"));

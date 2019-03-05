@@ -40,9 +40,7 @@ public class Deck {
                 // Makes the child the right src of the file
                 String src = "file:" + child;
                 Card c1 = new Card (cardRank, cardSuit, src, Card.cardValue(cardRank));
-                //System.out.println("In Deck, points: " + c1.points);
                 c1.getCardButton().setDisable(true);
-                //System.out.println("Card suit: " + c1.getSuit());
                 cards.add(c1);
             }
         }
@@ -90,10 +88,6 @@ public class Deck {
     public void startDeck ()    {
         addAllCards();
         shuffleDeck();
-    }
-
-    public void actionPerformed (ActionEvent event) {
-        System.out.println("wow");
     }
 
     public ArrayList<Card> getCards() { return cards;}

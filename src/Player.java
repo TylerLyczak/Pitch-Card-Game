@@ -11,7 +11,6 @@ public class Player {
     int tempPoints;
     boolean buttonPress;
     boolean buttonPress2;
-    int turn;
 
     Player ()   {
         hand = new Deck();
@@ -39,21 +38,12 @@ public class Player {
                             trick.add(hand.cards.get(i));
                             hand.cards.remove(i);
                             buttonPress2 = true;
-                            //turn++;
-                            //System.out.println("Turn: " + turn);
-                            //System.out.println("points: " + trick.get(i).points);
-                            //System.out.println(buttonPress);
-                            //return c1;
                             break;
                         }
                     }
-
-                    //System.out.println(event.getSource());
-                    //hand.cards.remove(event);
                 }
             });
         }
-        //System.out.println("Returning: " + buttonPress);
         return buttonPress2;
     }
 
@@ -90,22 +80,10 @@ public class Player {
     public void setBid (int amount) { bid = amount;}
 
 
-    public static void actionPerformed (javafx.event.ActionEvent event) {
-        System.out.println("wowwwwww");
-        System.out.println(event.getEventType());
-        //System.out.println(event.);
-
-    }
-
     // Makes all the cards in a players hand not clickable
     public void changeCardDisability (boolean bool) {
         for (int i=0; i<hand.getCards().size(); i++)    {
             hand.getCards().get(i).getCardButton().setDisable(bool);
         }
     }
-
-    public void updateHandDisplay (){}
-
-
-
 }

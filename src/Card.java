@@ -30,8 +30,6 @@ public class Card {
 
 
 
-
-
     Card (String rank, char suit, String src, int points)  {
         this.rank = rank;
         this.suit = suit;
@@ -46,24 +44,6 @@ public class Card {
         cardButton = new Button();
         cardButton.setGraphic(cardPic);
 
-        /*
-
-        cardButton.setOnAction((event) -> {
-            System.out.println("Card Button");
-            System.out.println(src);
-            //actionPerformed(event);
-        });
-
-        cardButton.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
-            @Override
-            public void handle(javafx.event.ActionEvent event) {
-                System.out.println("First Handle");
-                System.out.println(event.getClass());
-                actionPerformed(event);
-                Player.actionPerformed(event);
-            }
-        });
-        */
     }
 
     Card (Card c1) {

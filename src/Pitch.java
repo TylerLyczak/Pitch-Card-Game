@@ -1,12 +1,19 @@
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.Scene;
+import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Pitch extends Application {
     int turn;
@@ -501,6 +508,58 @@ public class Pitch extends Application {
         if (!changed)   { p1.changeCardDisability(false);}
 
         if (trickWinner == 1)    { p1.changeCardDisability(false);}
+    }
+
+    // Checks if any player reached 7 or above points
+    public boolean isWinner (Player p1, ArrayList<AIPlayer> AI) {
+        if (p1.getPoints() >= 7)    {
+            return true;
+        }
+        for (int i=0; i<AI.size(); i++) {
+            if (AI.get(i).getPoints() >= 7) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Adds all the players above 7 points to an array list
+    public ArrayList<Integer> determineWinner (Player p1, ArrayList<AIPlayer> AI)  {
+        ArrayList<Integer> winners = new ArrayList<Integer>();
+        if (p1.getPoints() >= 7)    {
+            winners.add(1);
+        }
+        for (int i=0; i<AI.size(); i++) {
+            if (AI.get(i).getPoints() >= 7) {
+                winners.add(i+2);
+            }
+        }
+        return winners;
+    }
+
+    public Scene makeWinnerScene (ArrayList<Integer> winners, HashMap<String, Scene> sceneMap, Stage myStage, Button exitWinner)   {
+        Text t = new Text();
+        t.setFont(new Font(50));
+        t.setWrappingWidth(500);
+        t.setTextAlignment(TextAlignment.CENTER);
+
+        String winnerText = "Congratulations to Player " + winners.get(0);
+        for (int i=1; i<winners.size(); i++)    {
+            winnerText += " And Player " + winners.get(i);
+        }
+        winnerText += "!";
+        t.setText(winnerText);
+
+        HBox winnerHbox = new HBox(10, t);
+        winnerHbox.setAlignment(Pos.CENTER);
+        VBox winnerFinal = new VBox(20, winnerHbox, exitWinner);
+        winnerFinal.setAlignment(Pos.CENTER);
+
+
+        Scene winnerScene = new Scene(winnerFinal, 800, 800);
+
+
+        return winnerScene;
     }
 
 
