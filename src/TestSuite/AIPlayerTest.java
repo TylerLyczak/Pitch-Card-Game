@@ -32,7 +32,7 @@ class AIPlayerTest {
     // Case 1 is where no cards were played at all, so new round
     // Bot will play its highest suit card
     @Test
-    void playCardCase1() {
+    void playCardCase1Test1() {
         char trump = 'S';
         ArrayList<Character> suits = new ArrayList<Character>();
         ArrayList<Card> trickList = new ArrayList<Card>();
@@ -50,6 +50,12 @@ class AIPlayerTest {
         testBot.playCard(trickList, suits, 1, trump);
         originalHand.removeAll(testBot.getHand().getCards());
         assertEquals(c3.getRank(), originalHand.get(0).getRank(), "Test first case, should return Queen");
+    }
+
+    // Case 2
+    @Test
+    void playCardCase1Test2 ()   {
+
     }
 
     @Test

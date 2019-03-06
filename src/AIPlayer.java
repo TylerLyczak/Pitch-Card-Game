@@ -30,6 +30,7 @@ public class AIPlayer extends Player {
                 selectableCards.add(hand.getCards().get(i));
                 for (int j=0; j<suits.size(); j++)  {
                     if (hand.getCards().get(i).getSuit() == suits.get(j))   {
+                        System.out.println("Selectable Cards are made");
                         nonSelectableCards.add(hand.getCards().get(i));
                     }
                 }
