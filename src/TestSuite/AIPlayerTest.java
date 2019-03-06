@@ -55,7 +55,23 @@ class AIPlayerTest {
     // Case 2
     @Test
     void playCardCase1Test2 ()   {
-
+        char trump = 'S';
+        ArrayList<Character> suits = new ArrayList<Character>();
+        ArrayList<Card> trickList = new ArrayList<Card>();
+        Card c1 = new Card("J", 'S', "file:../playingcards/JS.png", 11);
+        Card c2 = new Card("3", 'S', "file:../playingcards/3S.png", 3);
+        Card c3 = new Card("Q", 'S', "file:../playingcards/QS.png", 12);
+        Card c4 = new Card("A", 'C', "file:../playingcards/AC.png", 5);
+        Card c5 = new Card("10", 'S', "file:../playingcards/10S.png", 10);
+        testBot.getHand().addCard(c1);
+        testBot.getHand().addCard(c2);
+        testBot.getHand().addCard(c3);
+        testBot.getHand().addCard(c4);
+        testBot.getHand().addCard(c5);
+        ArrayList<Card> originalHand = (ArrayList<Card>)testBot.getHand().getCards().clone();
+        testBot.playCard(trickList, suits, 1, trump);
+        originalHand.removeAll(testBot.getHand().getCards());
+        assertEquals(c4.getRank(), originalHand.get(0).getRank(), "Test first case, should return Ace of Clubs");
     }
 
     @Test
