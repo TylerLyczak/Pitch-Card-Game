@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class AIPlayer extends Player {
-    Random randomGenerator;
+    private Random randomGenerator;
 
     AIPlayer () {
         randomGenerator = new Random();

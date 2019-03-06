@@ -7,10 +7,10 @@ public class Player {
     Deck hand;
     ArrayList<Card> trickDeck;
     int bid;
-    int newBid;
-    int points;
-    int tempPoints;
-    boolean buttonPress;
+    private int newBid;
+    private int points;
+    private int tempPoints;
+    private boolean buttonPress;
 
     Player ()   {
         hand = new Deck();
@@ -23,15 +23,15 @@ public class Player {
         //boolean pressed = false;
         for (int i=0; i<this.hand.cards.size(); i++)    {
             //System.out.println(hand.cards.get(i).cardButton);
-            hand.cards.get(i).cardButton.setOnAction(new EventHandler<ActionEvent>() {
+            hand.cards.get(i).getCardButton().setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     for (int i=0; i<hand.cards.size(); i++) {
-                        if (hand.cards.get(i).cardButton == event.getSource())  {
+                        if (hand.cards.get(i).getCardButton() == event.getSource())  {
                             hand.cards.get(i).setPlayedBy(1);
                             //System.out.println("YEEET");
                             //Update hbox
-                            hand.cards.get(i).cardButton.setVisible(false);
+                            hand.cards.get(i).getCardButton().setVisible(false);
                             trick.add(hand.cards.get(i));
                             hand.cards.remove(i);
                             buttonPress = true;

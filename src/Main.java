@@ -119,7 +119,7 @@ public class Main extends Application {
                 for (int i=0; i<playerNum-1; i++) {
                     AIPlayer bot = new AIPlayer();
                     AI.add(bot);
-                    AI.get(i).hand.cards = gameDealer.dealHand();
+                    AI.get(i).getHand().cards = gameDealer.dealHand();
                 }
             }
         });
@@ -306,7 +306,7 @@ public class Main extends Application {
                     game.setTurn(game.determineFirstTurn(p1, AI));
                     game.setRoundBid(false);
                     game.setRoundStart(true);
-                    game.roundMiddle = true;
+                    game.setRoundMiddle(true);
                 }
 
                 // Sees the first cards played and makes it trump
@@ -315,7 +315,7 @@ public class Main extends Application {
                 game.updatePlayerHand(p1);
 
 
-                if (game.trickList.size() == playerNum) {
+                if (game.getTrickList().size() == playerNum) {
                     game.setTurn(game.playerReceiveTrick(p1, AI, gamePane));
                     game.clearSuitsPlayed();
                     game.addTrumpSuitsPlayed();
@@ -327,7 +327,7 @@ public class Main extends Application {
                     // Calculate the score of each players won tricks
                     game.calculateScore(p1, AI);
 
-                    gameDealer.checkDeck(game.amountOfPlayers);
+                    gameDealer.checkDeck(game.getAmountOfPlayers());
 
 
                     p1.giveNewHand(gameDealer.dealHand());

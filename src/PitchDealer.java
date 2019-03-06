@@ -3,9 +3,9 @@ import java.util.Random;
 
 public class PitchDealer implements DealerType{
 
-    Dealer gameDealer;
-    Random randomGenerator;
-    boolean gameStart;
+    private Dealer gameDealer;
+    private Random randomGenerator;
+    private boolean gameStart;
 
     @Override
     public Dealer createDealer() {

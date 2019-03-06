@@ -14,17 +14,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Pitch {
-    int turn;
-    boolean roundStart;
-    boolean roundEnd;
-    boolean roundMiddle;
-    boolean roundBid;
-    char trump;
+    private int turn;
+    private boolean roundStart;
+    private boolean roundEnd;
+    private boolean roundMiddle;
+    private boolean roundBid;
+    private char trump;
     // Middle pile in the game. Decides trump and is cleared after turns are done
-    ArrayList<Card> trickList;
-    int amountOfPlayers;
-    int playerWentFirst;
-    int trickWinner;
+    private ArrayList<Card> trickList;
+    private int amountOfPlayers;
+    private int trickWinner;
     ArrayList<Character> suitsPlayed;
 
     Pitch ()    {
@@ -40,6 +39,8 @@ public class Pitch {
     public void setAmountOfPlayers (int num) { amountOfPlayers = num;}
 
     public void setRoundStart (boolean start)    { roundStart = start;}
+
+    public void setRoundMiddle (boolean middle) { roundMiddle = middle;}
 
     public void setRoundEnd (boolean end)   { roundEnd = end;}
 
@@ -57,7 +58,11 @@ public class Pitch {
 
     public int getTurn ()  { return turn;}
 
+    public int getAmountOfPlayers ()    { return amountOfPlayers;}
+
     public ArrayList<Character> getSuitsPlayed ()   { return suitsPlayed;}
+
+    public ArrayList<Card> getTrickList ()  { return trickList;}
 
 
     // Updates the HBox of the players hand with the cards
@@ -70,13 +75,13 @@ public class Pitch {
     }
 
     // Updates the middle pile with the cards played by the players
-    public void updateTickList (BorderPane gamePane, ArrayList<Card> trickList)   {
+    public void updateTrickList (BorderPane gamePane, ArrayList<Card> trickList)   {
         StackPane trickPane = new StackPane();
         //gamePane.setCenter(null);
         for (int i=0; i<trickList.size(); i++)  {
-            System.out.println("In Trick, card: " + trickList.get(i).src);
-            trickList.get(i).cardPic.setRotate(50*i);
-            trickPane.getChildren().add(trickList.get(i).cardPic);
+            System.out.println("In updateTickList, card: " + trickList.get(i).getSrc());
+            trickList.get(i).getCardPic().setRotate(50*i);
+            trickPane.getChildren().add(trickList.get(i).getCardPic());
         }
         gamePane.setCenter(trickPane);
 
@@ -102,7 +107,7 @@ public class Pitch {
 
     public void decideTrump ()  {
         if (roundStart && trickList.size() != 0) {
-            trump = trickList.get(0).suit;
+            trump = trickList.get(0).getSuit();
             System.out.println("Trump: " + trump);
             roundStart = false;
             roundMiddle = true;
@@ -394,10 +399,10 @@ public class Pitch {
             AI.get(i).resetTempPoints();
         }
 
-        System.out.println("Person Score: " + p1.points);
+        System.out.println("Person Score: " + p1.getPoints());
 
         for (int i=0; i<AI.size(); i++) {
-            System.out.println("Bot " + i + " Score: " + AI.get(i).points);
+            System.out.println("Bot " + i + " Score: " + AI.get(i).getPoints());
         }
     }
 
@@ -422,7 +427,7 @@ public class Pitch {
         if (!roundMiddle)   { return false;}
         if (turn == 1)  {
             if (p1.playCard(trickList)) {
-                updateTickList(gamePane, trickList);
+                updateTrickList(gamePane, trickList);
                 updateSuitsPlayed();
                 turn = 2;
                 return true;
@@ -431,7 +436,7 @@ public class Pitch {
         }
         else if (turn == 2) {
             AI.get(0).playCard(trickList, suitsPlayed,2, trump);
-            updateTickList(gamePane, trickList);
+            updateTrickList(gamePane, trickList);
             updateSuitsPlayed();
             if (AI.size() == 1) {
                 turn = 1;
@@ -444,14 +449,14 @@ public class Pitch {
         }
         else if (turn == 3) {
             AI.get(1).playCard(trickList, suitsPlayed,3, trump);
-            updateTickList(gamePane, trickList);
+            updateTrickList(gamePane, trickList);
             updateSuitsPlayed();
             if (AI.size() == 2) { turn = 1; return true;}
             else { turn = 4; return true;}
         }
         else if (turn == 4) {
             AI.get(2).playCard(trickList, suitsPlayed,4, trump);
-            updateTickList(gamePane, trickList);
+            updateTrickList(gamePane, trickList);
             updateSuitsPlayed();
             turn = 1;
             return true;

@@ -3,15 +3,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Card {
-    String rank;
-    char suit;
-    String src;
+    private String rank;
+    private char suit;
+    private String src;
     final String srcOfBack = "file:src/playingcards/gray_back.png";
-    int points;
-    Image pic;
-    int playedBy;
-    ImageView cardPic;
-    Button cardButton;
+    private int points;
+    private Image pic;
+    private int playedBy;
+    private ImageView cardPic;
+    private Button cardButton;
 
 
 
@@ -53,6 +53,10 @@ public class Card {
     public String getRank ()    { return rank;}
 
     public Button getCardButton ()    { return cardButton;}
+
+    public String getSrc () { return src;}
+
+    public ImageView getCardPic ()  { return cardPic;}
 
     // Used for calculating game point
     public static int cardValue (String rank)   {

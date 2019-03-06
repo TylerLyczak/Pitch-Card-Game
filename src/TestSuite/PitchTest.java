@@ -87,7 +87,7 @@ class PitchTest {
     }
 
     @Test
-    void updateTickList() {
+    void updateTrickList() {
     }
 
     @Test
