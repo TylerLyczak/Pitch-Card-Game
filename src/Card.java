@@ -1,27 +1,12 @@
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.scene.text.*;
-
-import java.awt.event.ActionEvent;
 
 public class Card {
     String rank;
     char suit;
     String src;
-    String srcOfBack = "file:src/playingcards/gray_back.png";
+    final String srcOfBack = "file:src/playingcards/gray_back.png";
     int points;
     Image pic;
     int playedBy;
@@ -52,8 +37,9 @@ public class Card {
         this.src = c1.src;
         this.points = c1.points;
         this.pic = c1.pic;
-        cardPic = c1.cardPic;
-        cardButton = c1.cardButton;
+        this.playedBy = c1.playedBy;
+        this.cardPic = c1.cardPic;
+        this.cardButton = c1.cardButton;
     }
 
     public void setPlayedBy (int num) { playedBy = num;}
@@ -67,15 +53,6 @@ public class Card {
     public String getRank ()    { return rank;}
 
     public Button getCardButton ()    { return cardButton;}
-
-    public void makeButton()    {
-        cardPic = new ImageView(pic);
-        cardPic.setFitHeight(500);
-        cardPic.setFitWidth(300);
-        cardPic.setPreserveRatio(true);
-        cardButton = new Button();
-        cardButton.setGraphic(cardPic);
-    }
 
     // Used for calculating game point
     public static int cardValue (String rank)   {
@@ -136,16 +113,4 @@ public class Card {
         if (cardRank(rank1) > cardRank(rank2))  { return false;}
         else    { return true;}
     }
-
-    public Card removeAndReturn ()  {
-        Card c1 = this;
-        return c1;
-    }
-
-    public void actionPerformed (javafx.event.ActionEvent event) {
-        System.out.println("wow");
-    }
-
-
-
 }

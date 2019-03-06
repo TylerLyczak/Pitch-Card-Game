@@ -1,6 +1,5 @@
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class Deck {
@@ -49,12 +48,10 @@ public class Deck {
     // Adds a card to the arraylist
     public void addCard (Card c1)   {
         cards.add(c1);
-        System.out.println("Added " + c1.src);
     }
 
     // Removes a card from the arraylist
     public void removeCard (Card c1)    {
-        System.out.println("Removed " + c1.src);
         cards.remove(c1);
     }
 
@@ -68,13 +65,11 @@ public class Deck {
     // Removes all cards in the arraylist
     public void deleteDeck ()   {
         cards.clear();
-        System.out.println("Deck Deleted");
     }
 
     // Shuffles the cards arraylist
     public void shuffleDeck ()  {
         Collections.shuffle(cards);
-        System.out.println("Shuffle Complete");
     }
 
     // Combination of functions under one name

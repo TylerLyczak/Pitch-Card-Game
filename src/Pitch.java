@@ -1,28 +1,24 @@
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Pitch extends Application {
+public class Pitch {
     int turn;
     boolean roundStart;
     boolean roundEnd;
     boolean roundMiddle;
     boolean roundBid;
-    boolean botBid;
-    Card roundCard;
     char trump;
     // Middle pile in the game. Decides trump and is cleared after turns are done
     ArrayList<Card> trickList;
@@ -30,7 +26,6 @@ public class Pitch extends Application {
     int playerWentFirst;
     int trickWinner;
     ArrayList<Character> suitsPlayed;
-
 
     Pitch ()    {
         trickList = new ArrayList<Card>();
@@ -40,10 +35,6 @@ public class Pitch extends Application {
         roundEnd = false;
         roundBid = false;
         turn = 0;
-    }
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-
     }
 
     public void setAmountOfPlayers (int num) { amountOfPlayers = num;}
@@ -104,12 +95,8 @@ public class Pitch extends Application {
 
         //gamePane.setCenter(null);
         trickList.clear();
-        p1.changeBoolButtonPress2();
+        p1.changeBoolButtonPress();
         gamePane.setCenter(null);
-    }
-
-    public void decideTurn ()   {
-
     }
 
     public void decideTrump ()  {
@@ -173,12 +160,13 @@ public class Pitch extends Application {
             }
         }
 
-
+        /*
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        */
 
 
         removeTrickList(p1, gamePane);
@@ -188,8 +176,6 @@ public class Pitch extends Application {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
 
         //System.out.println("Winner: " + winner);
         trickWinner = winner;
@@ -450,7 +436,7 @@ public class Pitch extends Application {
             else    { return false;}
         }
         else if (turn == 2) {
-            AI.get(0).playCard(trickList, 2);
+            AI.get(0).playCard(trickList, suitsPlayed,2, trump);
             updateTickList(gamePane, trickList);
             updateSuitsPlayed();
             if (AI.size() == 1) {
@@ -463,14 +449,14 @@ public class Pitch extends Application {
             }
         }
         else if (turn == 3) {
-            AI.get(1).playCard(trickList, 3);
+            AI.get(1).playCard(trickList, suitsPlayed,3, trump);
             updateTickList(gamePane, trickList);
             updateSuitsPlayed();
             if (AI.size() == 2) { turn = 1; return true;}
             else { turn = 4; return true;}
         }
         else if (turn == 4) {
-            AI.get(2).playCard(trickList, 4);
+            AI.get(2).playCard(trickList, suitsPlayed,4, trump);
             updateTickList(gamePane, trickList);
             updateSuitsPlayed();
             turn = 1;
@@ -508,7 +494,7 @@ public class Pitch extends Application {
         // If the player has no cards of the suits played, the player can play any card
         if (!changed)   { p1.changeCardDisability(false);}
 
-        if (trickWinner == 1)    { p1.changeCardDisability(false);}
+        if (trickWinner == 1 && trickList.size() == 0)    { p1.changeCardDisability(false);}
     }
 
     // Checks if any player reached 7 or above points
@@ -557,11 +543,94 @@ public class Pitch extends Application {
         VBox winnerFinal = new VBox(20, winnerHbox, exitWinner);
         winnerFinal.setAlignment(Pos.CENTER);
 
-
-        Scene winnerScene = new Scene(winnerFinal, 800, 800);
-
+        Scene winnerScene = new Scene(winnerFinal, 1000, 1000);
 
         return winnerScene;
+    }
+
+    public void updateScoreVbox (BorderPane gamePane, Player p1, ArrayList<AIPlayer> AI)    {
+        // For displaying the score
+        Text points = new Text();
+        points.setFont(new Font(200));
+        //points.setWrappingWidth(500);
+        points.setTextAlignment(TextAlignment.CENTER);
+        points.setText("Total Points");
+        HBox pointText = new HBox(points);
+
+        Text p1Points = new Text();
+        points.setFont(new Font(10));
+        //points.setWrappingWidth(500);
+        points.setTextAlignment(TextAlignment.CENTER);
+        points.setText("Player 1 points: " + p1.getPoints());
+        HBox p1PointsHbox = new HBox(p1Points);
+        p1PointsHbox.setAlignment(Pos.CENTER_LEFT);
+
+        if (AI.size() == 1) {
+            Text botOnePoints = new Text();
+            botOnePoints.setFont(new Font(10));
+            //points.setWrappingWidth(500);
+            botOnePoints.setTextAlignment(TextAlignment.CENTER);
+            botOnePoints.setText("Player 2 points: " + AI.get(0).getPoints());
+            HBox botOneHbox = new HBox(botOnePoints);
+            botOneHbox.setAlignment(Pos.CENTER_LEFT);
+
+            VBox playerPoints = new VBox(10, pointText, p1PointsHbox, botOneHbox);
+            playerPoints.setAlignment(Pos.CENTER_LEFT);
+            gamePane.setLeft(playerPoints);
+
+        }
+        else if (AI.size() == 2)    {
+            Text botOnePoints = new Text();
+            botOnePoints.setFont(new Font(10));
+            //points.setWrappingWidth(500);
+            botOnePoints.setTextAlignment(TextAlignment.CENTER);
+            botOnePoints.setText("Player 2 points: " + AI.get(0).getPoints());
+            HBox botOneHbox = new HBox(botOnePoints);
+            botOneHbox.setAlignment(Pos.CENTER_LEFT);
+
+            Text botTwoPoints = new Text();
+            botTwoPoints.setFont(new Font(10));
+            //points.setWrappingWidth(500);
+            botTwoPoints.setTextAlignment(TextAlignment.CENTER);
+            botTwoPoints.setText("Player 3 points: " + AI.get(1).getPoints());
+            HBox botTwoHbox = new HBox(botTwoPoints);
+            botTwoHbox.setAlignment(Pos.CENTER_LEFT);
+
+            VBox playerPoints = new VBox(10, pointText, p1PointsHbox, botOneHbox, botTwoHbox);
+            playerPoints.setAlignment(Pos.CENTER_LEFT);
+            gamePane.setLeft(playerPoints);
+        }
+        else if (AI.size() == 3)    {
+            Text botOnePoints = new Text();
+            botOnePoints.setFont(new Font(10));
+            //points.setWrappingWidth(500);
+            botOnePoints.setTextAlignment(TextAlignment.CENTER);
+            botOnePoints.setText("Player 2 points: " + AI.get(0).getPoints());
+            HBox botOneHbox = new HBox(botOnePoints);
+            botOneHbox.setAlignment(Pos.CENTER_LEFT);
+
+            Text botTwoPoints = new Text();
+            botTwoPoints.setFont(new Font(10));
+            //points.setWrappingWidth(500);
+            botTwoPoints.setTextAlignment(TextAlignment.CENTER);
+            botTwoPoints.setText("Player 3 points: " + AI.get(1).getPoints());
+            HBox botTwoHbox = new HBox(botTwoPoints);
+            botTwoHbox.setAlignment(Pos.CENTER_LEFT);
+
+            Text botThreePoints = new Text();
+            botThreePoints.setFont(new Font(10));
+            //points.setWrappingWidth(500);
+            botThreePoints.setTextAlignment(TextAlignment.CENTER);
+            botThreePoints.setText("Player 4 points: " + AI.get(2).getPoints());
+            HBox botThreeHbox = new HBox(botThreePoints);
+            botThreeHbox.setAlignment(Pos.CENTER_LEFT);
+
+            VBox playerPoints = new VBox(10, pointText, p1PointsHbox, botOneHbox, botTwoHbox, botThreeHbox);
+            playerPoints.setAlignment(Pos.CENTER_LEFT);
+            gamePane.setLeft(playerPoints);
+        }
+
+
     }
 
 

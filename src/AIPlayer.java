@@ -12,7 +12,7 @@ public class AIPlayer extends Player {
     }
 
 
-    public boolean playCard (ArrayList<Card> trick, int bot)    {
+    public boolean playCard2 (ArrayList<Card> trick, int bot)    {
         /*
         try {
             Thread.sleep(3000);
@@ -28,29 +28,214 @@ public class AIPlayer extends Player {
         return true;
     }
 
-    public boolean playCard2 (ArrayList<Card> trickList, ArrayList<Character> suits, int bot)   {
+
+    public boolean playCard (ArrayList<Card> trickList, ArrayList<Character> suits, int bot, char trump)   {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Makes a new list of cards with only cards that can be played at the time
+        ArrayList<Card> selectableCards = new ArrayList<Card>();
+        ArrayList<Card> nonSelectableCards = new ArrayList<Card>();
+        boolean cardsPlayedRound = false;
         if (suits.size() != 0)  {
+            cardsPlayedRound = true;
             // change playable cards
             for (int i=0; i<hand.getCards().size(); i++)    {
+                selectableCards.add(hand.getCards().get(i));
+                for (int j=0; j<suits.size(); j++)  {
+                    if (hand.getCards().get(i).getSuit() == suits.get(j))   {
+                        nonSelectableCards.add(hand.getCards().get(i));
+                    }
+                }
+            }
+            // Removes all the cards the AI cant play so it follows the rules
+            selectableCards.removeAll(nonSelectableCards);
+        }
 
+        if (selectableCards.size() == 0)    {
+            selectableCards = hand.getCards();
+        }
+        // Determines how the AI will choose a card
+        boolean cardsPlayedTurn = false;
+        if (trickList.size() == 0)  { cardsPlayedTurn = false;}
+        else    { cardsPlayedTurn = true;}
+
+        // Plays the highest suit card it has
+        // Case where the bot is the first to go in the round
+        if (!cardsPlayedRound && !cardsPlayedTurn)   {
+            Card highCard = hand.getCards().get(0);
+            int index = 0;
+            for (int i=0; i<hand.getCards().size(); i++)    {
+                if (Card.cardRank(highCard.getRank()) < Card.cardRank(hand.getCards().get(i).getRank()))    {
+                    highCard = hand.getCards().get(i);
+                    index = i;
+                }
+            }
+            // Plays the card
+            hand.getCards().get(index).setPlayedBy(bot);
+            trickList.add(hand.getCards().get(index));
+            hand.getCards().remove(index);
+            return true;
+        }
+        // Case where cards were played by a previous trick, bot won trick
+        else if (cardsPlayedRound && !cardsPlayedTurn)  {
+            Card highCard = selectableCards.get(0);
+            int index = 0;
+            for (int i=0; i<selectableCards.size(); i++)    {
+                if (Card.cardRank(highCard.getRank()) < Card.cardRank(selectableCards.get(i).getRank()))    {
+                    highCard = selectableCards.get(i);
+                    index = i;
+                }
+            }
+            int handIndex = -1;
+            for (int i=0; i<hand.getCards().size(); i++)    {
+                if (hand.getCards().get(i) == highCard) {
+                    handIndex = i;
+                    break;
+                }
+            }
+            // Plays the card
+            hand.getCards().get(handIndex).setPlayedBy(bot);
+            trickList.add(hand.getCards().get(handIndex));
+            hand.getCards().remove(handIndex);
+            return true;
+        }
+
+        // else case where the bot is not the first to go
+        // Sees if there is a trump in the tricklist
+        boolean trumpPlayed = false;
+        int trumpRank = 0;
+        for (int i=0; i<trickList.size(); i++)  {
+            if (trickList.get(i).getSuit() == trump)    {
+                trumpPlayed = true;
+                if (Card.cardRank(trickList.get(i).getRank()) > trumpRank)  {
+                    trumpRank = Card.cardRank(trickList.get(i).getRank());
+                }
+            }
+        }
+        // Sees if the bot has a higher trump card to beat the trumps in the tricklist
+        boolean hasTrump = false;
+        boolean onlyTrumps = true;
+        int hasTrumpRank = 0;
+        Card hasTrumpCard = null;
+        for (int i=0; i<selectableCards.size(); i++)    {
+            if (selectableCards.get(i).getSuit() == trump)  {
+                hasTrump = true;
+                for (int j=0; j<trickList.size(); j++)  {
+                    if (Card.cardRank(trickList.get(j).getRank()) > hasTrumpRank)  {
+                        hasTrumpRank = Card.cardRank(selectableCards.get(i).getRank());
+                        hasTrumpCard = selectableCards.get(i);
+                    }
+                }
+            }
+            else    { onlyTrumps = false;}
+        }
+
+        // Sees if the bots trump is higher than the tricklist trump high, if not, it will play a less valuable card
+        if (trumpPlayed && hasTrump)    {
+            // If the bots trump is higher, than it will play its highest
+            if (hasTrumpRank > trumpRank)   {
+                int handIndexTrump = -1;
+                for (int i=0; i<hand.getCards().size(); i++)    {
+                    if (hand.getCards().get(i) == hasTrumpCard) {
+                        handIndexTrump = i;
+                        break;
+                    }
+                }
+                // Playes the card
+                hand.getCards().get(handIndexTrump).setPlayedBy(bot);
+                trickList.add(hand.getCards().get(handIndexTrump));
+                hand.getCards().remove(handIndexTrump);
+                return true;
             }
         }
 
-
-        return false;
-    }
-
-    public void makeBid (int highBid)  {
-        //int ranIndex = randomGenerator.nextInt();
-        ArrayList<Integer> nums = new ArrayList<Integer>();
-        nums.add(1);
-        for (int i=2; i<6; i++) {
-            if (i > highBid)    {
-                nums.add (i);
+        // Bot wont play its high trump if it doesn't have too, it will play any low non trump card it has
+        if (hasTrump && !onlyTrumps)   {
+            Card lowNonTrump = null;
+            int lowNonTrumpIndex = -1;
+            for (int i=0; i<selectableCards.size(); i++)    {
+                if (selectableCards.get(i).getSuit() != trump)  {
+                    lowNonTrump = selectableCards.get(i);
+                    lowNonTrumpIndex = i;
+                    break;
+                }
             }
+            // Now that we found the non trump card, we need to make sure its the lowest
+            for (int i=0; i<selectableCards.size(); i++)    {
+                if (selectableCards.get(i).getSuit() != trump)   {
+                    if (Card.cardRank(lowNonTrump.getRank()) > Card.cardRank(selectableCards.get(i).getRank())) {
+                        lowNonTrump = selectableCards.get(i);
+                        lowNonTrumpIndex = i;
+                    }
+                }
+            }
+            // Gets the index of the low non trump card in the hand
+            int handLow = -1;
+            for (int i=0; i<hand.getCards().size(); i++)    {
+                if (hand.getCards().get(i) == lowNonTrump)  {
+                    handLow = i;
+                    break;
+                }
+            }
+            // Playes the card
+            hand.getCards().get(handLow).setPlayedBy(bot);
+            trickList.add(hand.getCards().get(handLow));
+            hand.getCards().remove(handLow);
+            return true;
         }
-        int ranIndex = randomGenerator.nextInt(nums.size());
-        bid = nums.get(ranIndex);
+
+        // Case where the bot only has trumps but can't beat the high trump in the tricklist, so it will try to play
+        // any of its middle trump cards
+
+        if (onlyTrumps) {
+            Card lowTrump = selectableCards.get(0);
+            Card highTrump = selectableCards.get(0);
+            Card middleTrump = null;
+            int lowTrumpIndex = 0;
+            int highTrumpIndex = 0;
+            int middleTrumpIndex = -1;
+            for (int i=0; i<selectableCards.size(); i++)    {
+                if (Card.cardRank(lowTrump.getRank()) > Card.cardRank(selectableCards.get(i).getRank()))    {
+                    lowTrump = selectableCards.get(i);
+                    lowTrumpIndex = i;
+                }
+                if (Card.cardRank(highTrump.getRank()) < Card.cardRank(selectableCards.get(i).getRank()))   {
+                    highTrump = selectableCards.get(i);
+                    highTrumpIndex = i;
+                }
+            }
+            middleTrumpIndex = highTrumpIndex - lowTrumpIndex;
+            System.out.println("middleTrump: " + middleTrumpIndex);
+            middleTrump = selectableCards.get(middleTrumpIndex);
+            // Gets the index of the middle trump in the hand
+            int newMiddleIndex = -1;
+            for (int i=0; i<hand.getCards().size(); i++)    {
+                if (hand.getCards().get(i) == middleTrump)  {
+                    newMiddleIndex = i;
+                    break;
+                }
+            }
+            // Playes the card
+            hand.getCards().get(newMiddleIndex).setPlayedBy(bot);
+            trickList.add(hand.getCards().get(newMiddleIndex));
+            hand.getCards().remove(newMiddleIndex);
+            return true;
+        }
+
+
+        // Case where all else fails, it will play a random card
+        // Never happens but it is safe to have included
+        System.out.println("OOOOOOOOOOOOOO SHHIIIIIITTTTTTTTTTT  bot: " + bot);
+        int ranIndex = randomGenerator.nextInt(hand.cards.size());
+        hand.cards.get(ranIndex).setPlayedBy(bot);
+        trickList.add(hand.cards.get(ranIndex));
+        hand.cards.remove(ranIndex);
+        return true;
+
     }
 
     // Determines what bid the bot will make depending on their hand
@@ -142,31 +327,31 @@ public class AIPlayer extends Player {
             if (weightPercentage.get(i) > 0.5 && bidToChoose.contains(2))   {
                 calcBid.add(2);
             }
-            else if (weightPercentage.get(i) > 0.5 && bidToChoose.contains(3))  {
+            else if (weightPercentage.get(i) >= 0.5 && bidToChoose.contains(3))  {
                 calcBid.add(3);
             }
-            else if (weightPercentage.get(i) > 0.6 && bidToChoose.contains(3))  {
+            else if (weightPercentage.get(i) >= 0.6 && bidToChoose.contains(3))  {
                 calcBid.add(3);
             }
-            else if (weightPercentage.get(i) > 0.65 && bidToChoose.contains(4)) {
+            else if (weightPercentage.get(i) >= 0.65 && bidToChoose.contains(4)) {
                 calcBid.add(4);
             }
-            else if (weightPercentage.get(i) > 0 && bidToChoose.contains(1))    {
+            else if (weightPercentage.get(i) >= 0 && bidToChoose.contains(1))    {
                 calcBid.add(1);
             }
-            else if (weightPercentage.get(i) > 0.1 && bidToChoose.contains(1))   {
+            else if (weightPercentage.get(i) >= 0.1 && bidToChoose.contains(1))   {
                 calcBid.add(1);
             }
-            else if (weightPercentage.get(i) > 0.2 && bidToChoose.contains(1))   {
+            else if (weightPercentage.get(i) >= 0.2 && bidToChoose.contains(1))   {
                 calcBid.add(1);
             }
-            else if (weightPercentage.get(i) > 0.35 && bidToChoose.contains(2))  {
+            else if (weightPercentage.get(i) >= 0.35 && bidToChoose.contains(2))  {
                 calcBid.add(2);
             }
-            else if (weightPercentage.get(i) > 0.4 && bidToChoose.contains(2))  {
+            else if (weightPercentage.get(i) >= 0.4 && bidToChoose.contains(2))  {
                 calcBid.add(2);
             }
-            else if (weightPercentage.get(i) > 0.45 && bidToChoose.contains(3)) {
+            else if (weightPercentage.get(i) >= 0.45 && bidToChoose.contains(3)) {
                 calcBid.add(3);
             }
         }
@@ -176,6 +361,7 @@ public class AIPlayer extends Player {
         for (int i=0; i<calcBid.size(); i++)    {
             if (calcBid.get(i) > finalBid)  {
                 finalBid = calcBid.get(i);
+                System.out.println("Final bid: " + finalBid);
             }
         }
 

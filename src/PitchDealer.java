@@ -34,20 +34,20 @@ public class PitchDealer implements DealerType{
         return hand;
     }
 
-    public int deckSize ()  {
-        return gameDealer.gameDeck.getCards().size();
-    }
-
     public void dealerReset ()  {
         gameDealer.gameDeck.resetDeck();
     }
 
-
     public void checkDeck (int playerNum)   {
-        if (gameDealer.gameDeck.getCards().size() < 6 || gameDealer.gameDeck.getCards().size() < playerNum)  {
+        if (gameDealer.gameDeck.getCards().size() < 6 || gameDealer.gameDeck.getCards().size() < playerNum*6)  {
             dealerReset();
         }
     }
 
     public void setGameStart (boolean start)    { gameStart = start;}
+
+    public boolean getGameStart ()  { return gameStart;}
+
+    public Dealer getGameDealer ()  { return gameDealer;}
+
 }

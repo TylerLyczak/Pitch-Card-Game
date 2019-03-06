@@ -1,8 +1,4 @@
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -10,16 +6,21 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.scene.text.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Main extends Application {
@@ -32,7 +33,6 @@ public class Main extends Application {
     Scene gameScene, winnerScene;
     //
     HashMap<String, Scene> sceneMap;
-    //added
     // Player default is set to 2
     int playerNum = 2;
     int bid;
@@ -159,7 +159,7 @@ public class Main extends Application {
         t.setFont(new Font(50));
         t.setWrappingWidth(500);
         t.setTextAlignment(TextAlignment.CENTER);
-        t.setText("M A M A");
+        t.setText("Trick Card Game");
 
 
         btn.setGraphic(v);
@@ -201,13 +201,11 @@ public class Main extends Application {
 
 
         // Gives player cards
-        //p1.hand.cards = gameDealer.dealHand();
         p1.getHand().setCards(gameDealer.dealHand());
 
 
         HBox playerHand = new HBox (10);
         playerHand.setAlignment(Pos.BOTTOM_CENTER);
-
 
         // Updates hbox with card buttons
         game.updateHand(playerHand, p1);
@@ -222,6 +220,7 @@ public class Main extends Application {
 
         submit.setOnAction( (event -> {
             gamePane.setCenter(null);
+            boolean bidsNotOne = false;
             int highBid = p1.getBid();
             ArrayList<Integer> bidNums = new ArrayList<Integer>();
             bidNums.add(highBid);
@@ -234,6 +233,7 @@ public class Main extends Application {
                 */
                 AI.get(i).determineBid(bidNums);
             }
+            // If bids are all one, game will reset
 
             System.out.println("Player bid: " + p1.getBid());
             for (int i=0; i<AI.size(); i++) {
@@ -315,7 +315,6 @@ public class Main extends Application {
                 game.updatePlayerHand(p1);
 
 
-
                 if (game.trickList.size() == playerNum) {
                     game.setTurn(game.playerReceiveTrick(p1, AI, gamePane));
                     game.clearSuitsPlayed();
@@ -362,13 +361,15 @@ public class Main extends Application {
                     gameLoop.stop();
                 }
 
+                game.updateScoreVbox(gamePane, p1, AI);
+
             }
         };
         gameLoop.start();
 
 
-        scene = new Scene(pane, 800, 800);
-        gameScene = new Scene(gamePane, 800, 800);
+        scene = new Scene(pane, 1000, 1000);
+        gameScene = new Scene(gamePane, 1000, 1000);
 
         sceneMap.put("welcome", scene);
         sceneMap.put("gamePlay", scene2);

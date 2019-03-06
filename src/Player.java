@@ -7,10 +7,10 @@ public class Player {
     Deck hand;
     ArrayList<Card> trickDeck;
     int bid;
+    int newBid;
     int points;
     int tempPoints;
     boolean buttonPress;
-    boolean buttonPress2;
 
     Player ()   {
         hand = new Deck();
@@ -18,9 +18,6 @@ public class Player {
         buttonPress = false;
     }
 
-    public void makeBid ()  {
-
-    }
 
     public boolean playCard (ArrayList<Card> trick) {
         //boolean pressed = false;
@@ -37,23 +34,19 @@ public class Player {
                             hand.cards.get(i).cardButton.setVisible(false);
                             trick.add(hand.cards.get(i));
                             hand.cards.remove(i);
-                            buttonPress2 = true;
+                            buttonPress = true;
                             break;
                         }
                     }
                 }
             });
         }
-        return buttonPress2;
+        return buttonPress;
     }
 
     public void resetBid () { bid = 0;}
 
-    public void changeBoolButtonPress ()    {
-        buttonPress = false;
-    }
-
-    public void changeBoolButtonPress2 () { buttonPress2 = false;}
+    public void changeBoolButtonPress () { buttonPress = false;}
 
     public ArrayList<Card> getTrickDeck ()  { return trickDeck;}
 
@@ -77,7 +70,7 @@ public class Player {
 
     public void resetTempPoints ()  { tempPoints = 0;}
 
-    public void setBid (int amount) { bid = amount;}
+    public void setBid (int amount) { bid = amount; newBid = amount;}
 
 
     // Makes all the cards in a players hand not clickable

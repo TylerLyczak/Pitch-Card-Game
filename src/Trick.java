@@ -51,7 +51,7 @@ public class Trick {
 
         //gamePane.setCenter(null);
         tr.clear();
-        p1.changeBoolButtonPress2();
+        p1.changeBoolButtonPress();
         //gamePane.setCenter(null);
     }
 

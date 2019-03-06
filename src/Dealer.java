@@ -5,5 +5,6 @@ public interface Dealer {
 
     public ArrayList<Card> dealHand();
 
+    public Deck getGameDeck();
 
 }
