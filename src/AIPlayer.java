@@ -8,26 +8,9 @@ public class AIPlayer extends Player {
         randomGenerator = new Random();
         hand = new Deck();
         trickDeck = new ArrayList<Card>();
-        System.out.println("Bot Added");
     }
 
-
-    public boolean playCard2 (ArrayList<Card> trick, int bot)    {
-        /*
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        */
-
-        int ranIndex = randomGenerator.nextInt(hand.cards.size());
-        hand.cards.get(ranIndex).setPlayedBy(bot);
-        trick.add(hand.cards.get(ranIndex));
-        hand.cards.remove(ranIndex);
-        return true;
-    }
-
+    public Random getRandomGenerator ()   { return randomGenerator;}
 
     public boolean playCard (ArrayList<Card> trickList, ArrayList<Character> suits, int bot, char trump)   {
         try {
@@ -66,6 +49,7 @@ public class AIPlayer extends Player {
         // Plays the highest suit card it has
         // Case where the bot is the first to go in the round
         if (!cardsPlayedRound && !cardsPlayedTurn)   {
+            System.out.println("Case 1");
             Card highCard = hand.getCards().get(0);
             int index = 0;
             for (int i=0; i<hand.getCards().size(); i++)    {
@@ -74,14 +58,17 @@ public class AIPlayer extends Player {
                     index = i;
                 }
             }
+            System.out.println("Case 1 Success");
             // Plays the card
             hand.getCards().get(index).setPlayedBy(bot);
             trickList.add(hand.getCards().get(index));
             hand.getCards().remove(index);
             return true;
         }
+        // Case 2
         // Case where cards were played by a previous trick, bot won trick
         else if (cardsPlayedRound && !cardsPlayedTurn)  {
+            System.out.println("Case 2");
             Card highCard = selectableCards.get(0);
             int index = 0;
             for (int i=0; i<selectableCards.size(); i++)    {
@@ -97,6 +84,7 @@ public class AIPlayer extends Player {
                     break;
                 }
             }
+            System.out.println("Case 2 Success");
             // Plays the card
             hand.getCards().get(handIndex).setPlayedBy(bot);
             trickList.add(hand.getCards().get(handIndex));
@@ -136,6 +124,7 @@ public class AIPlayer extends Player {
 
         // Sees if the bots trump is higher than the tricklist trump high, if not, it will play a less valuable card
         if (trumpPlayed && hasTrump)    {
+            System.out.println("Case 3");
             // If the bots trump is higher, than it will play its highest
             if (hasTrumpRank > trumpRank)   {
                 int handIndexTrump = -1;
@@ -145,6 +134,7 @@ public class AIPlayer extends Player {
                         break;
                     }
                 }
+                System.out.println("Case 3 Success");
                 // Playes the card
                 hand.getCards().get(handIndexTrump).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(handIndexTrump));
@@ -155,6 +145,7 @@ public class AIPlayer extends Player {
 
         // Bot wont play its high trump if it doesn't have too, it will play any low non trump card it has
         if (hasTrump && !onlyTrumps)   {
+            System.out.println("Case 4");
             Card lowNonTrump = null;
             int lowNonTrumpIndex = -1;
             for (int i=0; i<selectableCards.size(); i++)    {
@@ -181,6 +172,7 @@ public class AIPlayer extends Player {
                     break;
                 }
             }
+            System.out.println("Case 4 Success");
             // Playes the card
             hand.getCards().get(handLow).setPlayedBy(bot);
             trickList.add(hand.getCards().get(handLow));
@@ -192,6 +184,7 @@ public class AIPlayer extends Player {
         // any of its middle trump cards
 
         if (onlyTrumps) {
+            System.out.println("Case 5");
             Card lowTrump = selectableCards.get(0);
             Card highTrump = selectableCards.get(0);
             Card middleTrump = null;
@@ -219,6 +212,7 @@ public class AIPlayer extends Player {
                     break;
                 }
             }
+            System.out.println("Case 5 Success");
             // Playes the card
             hand.getCards().get(newMiddleIndex).setPlayedBy(bot);
             trickList.add(hand.getCards().get(newMiddleIndex));
@@ -226,7 +220,7 @@ public class AIPlayer extends Player {
             return true;
         }
 
-
+        System.out.println("Case 6 Success");
         // Case where all else fails, it will play a random card
         // Never happens but it is safe to have included
         System.out.println("OOOOOOOOOOOOOO SHHIIIIIITTTTTTTTTTT  bot: " + bot);

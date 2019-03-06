@@ -45,6 +45,8 @@ public class Pitch {
 
     public void setRoundBid (boolean bidBool)   { roundBid = bidBool;}
 
+    public void setTrickList (ArrayList<Card> trick)    { trickList = trick;}
+
     public void setTurn (int turnNum)   { turn = turnNum;}
 
     public boolean getRoundStart ()    { return roundStart;}
@@ -55,24 +57,23 @@ public class Pitch {
 
     public int getTurn ()  { return turn;}
 
+    public ArrayList<Character> getSuitsPlayed ()   { return suitsPlayed;}
+
 
     // Updates the HBox of the players hand with the cards
     public void updateHand (HBox hand, Player p1)   {
-        System.out.println("Update Hand");
+        //System.out.println("Update Hand");
         for (int i=0; i<6; i++) {
-            hand.getChildren().add(p1.hand.cards.get(i).cardButton);
-            // if card is played, update button clickability
+            hand.getChildren().add(p1.getHand().getCards().get(i).getCardButton());
         }
         hand.setAlignment(Pos.BOTTOM_CENTER);
     }
 
     // Updates the middle pile with the cards played by the players
     public void updateTickList (BorderPane gamePane, ArrayList<Card> trickList)   {
-        //FlowPane trickFlow = new FlowPane();
         StackPane trickPane = new StackPane();
         //gamePane.setCenter(null);
         for (int i=0; i<trickList.size(); i++)  {
-            //flow.getChildren().add(trickList.get(i).cardPic);
             System.out.println("In Trick, card: " + trickList.get(i).src);
             trickList.get(i).cardPic.setRotate(50*i);
             trickPane.getChildren().add(trickList.get(i).cardPic);
@@ -168,7 +169,6 @@ public class Pitch {
         }
         */
 
-
         removeTrickList(p1, gamePane);
 
         try {
@@ -186,25 +186,20 @@ public class Pitch {
         boolean check = false;
         if (p1.getHand().getCards().size() == 0)    {
             check = true;
-            System.out.println("P1 check true");
         }
         else    { return false;}
 
         for (int i=0; i<amountOfPlayers-1; i++) {
             if (AI.get(i).getHand().getCards().size() == 0)    {
                 check = true;
-                System.out.println("AI num: " + i + "check true");
             }
             else    {
                 check = false;
-                System.out.println("AI num: " + i + " hand size: " + AI.get(i).getHand().getCards().size());
                 return false;
             }
         }
 
         if (check)  {
-            //calc score
-            System.out.println("Check Success");
             roundMiddle = false;
             roundEnd = true;
             return true;
@@ -398,7 +393,6 @@ public class Pitch {
         for (int i=0; i<AI.size(); i++) {
             AI.get(i).resetTempPoints();
         }
-
 
         System.out.println("Person Score: " + p1.points);
 
