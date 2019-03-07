@@ -52,7 +52,8 @@ class AIPlayerTest {
         assertEquals(c3.getRank(), originalHand.get(0).getRank(), "Test first case, should return Queen");
     }
 
-    // Case 2
+    // Case 1 is where no cards were played at all, so new round
+    // Bot will play its highest suit card of its highest suit
     @Test
     void playCardCase1Test2 ()   {
         char trump = 'S';

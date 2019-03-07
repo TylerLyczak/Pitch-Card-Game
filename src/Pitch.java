@@ -398,12 +398,6 @@ public class Pitch {
         for (int i=0; i<AI.size(); i++) {
             AI.get(i).resetTempPoints();
         }
-
-        System.out.println("Person Score: " + p1.getPoints());
-
-        for (int i=0; i<AI.size(); i++) {
-            System.out.println("Bot " + i + " Score: " + AI.get(i).getPoints());
-        }
     }
 
     // Determines who goes first depending on their bid
