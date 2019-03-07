@@ -37,14 +37,14 @@ class DeckTest {
 
     @Test
     void addCard() {
-        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2);
+        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2, 2);
         testDeck.addCard(c1);
         assertEquals(c1, testDeck.getCards().get(0), "Testing if card was added to deck");
     }
 
     @Test
     void removeCard() {
-        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2);
+        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2, 2);
         testDeck.addCard(c1);
         testDeck.removeCard(c1);
         assertEquals(0, testDeck.getCards().size());
@@ -105,7 +105,7 @@ class DeckTest {
     @Test
     void setCards() {
         ArrayList<Card> cardList = new ArrayList<Card>();
-        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2);
+        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2, 2);
         cardList.add(c1);
         testDeck.setCards(cardList);
         assertEquals(1, testDeck.getCards().size());

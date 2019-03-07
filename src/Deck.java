@@ -38,7 +38,7 @@ public class Deck {
                 }
                 // Makes the child the right src of the file
                 String src = "file:" + child;
-                Card c1 = new Card (cardRank, cardSuit, src, Card.cardValue(cardRank));
+                Card c1 = new Card (cardRank, cardSuit, src, Card.cardValue(cardRank), Card.cardRank(cardRank));
                 c1.getCardButton().setDisable(true);
                 cards.add(c1);
             }

@@ -139,7 +139,7 @@ class PitchTest {
 
     @Test
     void updateSuitsPlayed() {
-        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2);
+        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2, 2);
         ArrayList<Card> testTrick = new ArrayList<Card>();
         testTrick.add(c1);
         testPitch.setTrickList(testTrick);
@@ -149,7 +149,7 @@ class PitchTest {
 
     @Test
     void clearSuitsPlayed() {
-        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2);
+        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2, 2);
         ArrayList<Card> testTrick = new ArrayList<Card>();
         testTrick.add(c1);
         testPitch.setTrickList(testTrick);

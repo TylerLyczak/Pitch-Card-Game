@@ -21,9 +21,18 @@ public class AIPlayer extends Player {
 
     public Random getRandomGenerator ()   { return randomGenerator;}
 
+    public double getDiamondWeight ()   { return diamondWeight;}
+
+    public double getSpadeWeight () { return spadeWeight;}
+
+    public double getHeartWeight () { return heartWeight;}
+
+    public double getClubWeight() { return clubWeight;}
+
     // Calculates the weights of each card by adding up the ranks and dividing by the total
-    private void updateCardHandWeights ()    {
+    public void updateCardHandWeights ()    {
         if (hand.getCards().size() == 0)    {
+            System.out.println("Hand empty");
             diamondWeight = 0;
             spadeWeight = 0;
             heartWeight = 0;
@@ -59,6 +68,7 @@ public class AIPlayer extends Player {
                 }
             }
         }
+        // It then will
         totalWeight = diamondWeight + clubWeight + heartWeight + spadeWeight;
         diamondWeight = diamondWeight/totalWeight;
         clubWeight = clubWeight/totalWeight;
@@ -165,20 +175,21 @@ public class AIPlayer extends Player {
             // Calculates if it has a card in its highest suit greater than a jack and if it has all trumps
             for (int i=0; i<hand.getCards().size(); i++)    {
                 if (hand.getCards().get(i).getSuit() == highestSuit)    {
-                    if (Card.cardValue(hand.getCards().get(i).getRank()) > 11)  {
+                    if (hand.getCards().get(i).getRankVal() > 11)  {
                         atLeastQueen = true;
                         highCard = hand.getCards().get(i);
+                        highIndex = i;
                     }
                 }
                 else    { allTrumps = false; amountOfNonTrumps++;}
             }
 
-            // Plays that highest trump card
+            // Case 1.1 Plays that highest trump card
             if (atLeastQueen && amountOfNonTrumps <= 3) {
                 // Finds the highest card of the highest suit
                 for (int i=0; i<hand.getCards().size(); i++)    {
                     if (hand.getCards().get(i).getSuit() == highestSuit)    {
-                        if (Card.cardValue(hand.getCards().get(i).getRank()) > Card.cardRank(highCard.getRank()))  {
+                        if (hand.getCards().get(i).getRankVal() > highCard.getRankVal())  {
                             highCard = hand.getCards().get(i);
                             highIndex = i;
                         }
@@ -191,17 +202,28 @@ public class AIPlayer extends Player {
                 hand.getCards().remove(highIndex);
                 return true;
             }
-            // If it doesn't have a high trump but only has cards of the same suit, then it will play the lowest value
-            // it has besides two since that can be a point
+            // Case 1.2 If it doesn't have a high trump but only has cards of the same suit,
+            // then it will play the lowest value it has besides two since that can be a point
             else if (allTrumps) {
                 int lowTrumpIndex = -1;
+                Card lowTrump = null;
 
                 // This loop finds any low card > 2 and returns it
                 for (int i=0; i<hand.getCards().size(); i++)    {
                     //
-                    if (Card.cardRank(hand.getCards().get(i).getRank()) != 2 && hand.getCards().get(i) != highCard)  {
+                    if (hand.getCards().get(i).getRankVal() != 2 && hand.getCards().get(i) != highCard)  {
                         lowTrumpIndex = i;
+                        lowTrump = hand.getCards().get(i);
                         break;
+                    }
+                }
+                // This loop will make sure its the lowest besides 2
+                for (int i=0; i<hand.getCards().size(); i++)    {
+                    if (hand.getCards().get(i).getRankVal() != 2)    {
+                        if (hand.getCards().get(i).getRankVal() < lowTrump.getRankVal())    {
+                            lowTrump = hand.getCards().get(i);
+                            lowTrumpIndex = i;
+                        }
                     }
                 }
                 // Plays the card
@@ -211,7 +233,7 @@ public class AIPlayer extends Player {
                 hand.getCards().remove(lowTrumpIndex);
                 return true;
             }
-            // If it cant find any high value trump card, it will return one of its low cards
+            // Case 1.3 If it cant find any high value trump card, it will return one of its low cards
             else    {
                 // Adds any non trump card to an array list
                 ArrayList<Card> nonTrumps = new ArrayList<Card>();
@@ -864,62 +886,22 @@ public class AIPlayer extends Player {
 
     // Determines what bid the bot will make depending on their hand
     public void determineBid (ArrayList<Integer> previousBids) {
-        // 0 = Diamonds
-        // 1 = Clubs
-        // 2 = Hearts
-        // 3 = Spades
-        ArrayList<Integer> suitWeights = new ArrayList<Integer>();
-        int diamondWeight = 0;
-        int clubWeight = 0;
-        int heartWeight = 0;
-        int spadeWeight = 0;
-        // This for-loop goes through the bots hand and adds up the value of all the cards of each suit into separate weights
-        for (int i=0; i<hand.getCards().size(); i++)    {
-            if (hand.getCards().get(i).getSuit() == 'D')    {
-                if (Card.cardRank(hand.getCards().get(i).getRank()) > 0) {
-                    diamondWeight += Card.cardRank(hand.getCards().get(i).getRank());
-                }
-            }
-            else if (hand.getCards().get(i).getSuit() == 'C')   {
-                if (Card.cardRank(hand.getCards().get(i).getRank()) > 0) {
-                    clubWeight += Card.cardRank(hand.getCards().get(i).getRank());
-                }
-            }
-            else if (hand.getCards().get(i).getSuit() == 'H')   {
-                if (Card.cardRank(hand.getCards().get(i).getRank()) > 0) {
-                    heartWeight += Card.cardRank(hand.getCards().get(i).getRank());
-                }
-            }
-            else if (hand.getCards().get(i).getSuit() == 'S')   {
-                if (Card.cardRank(hand.getCards().get(i).getRank()) > 0) {
-                    spadeWeight += Card.cardRank(hand.getCards().get(i).getRank());
-                }
-            }
-        }
+        updateCardHandWeights ();
 
-        suitWeights.add(diamondWeight);
-        suitWeights.add(clubWeight);
-        suitWeights.add(heartWeight);
-        suitWeights.add(spadeWeight);
-        System.out.println("DiamondWeight: " + diamondWeight);
-        System.out.println("ClubWeight: " + clubWeight);
-        System.out.println("HeartWeight: " + heartWeight);
-        System.out.println("SpadeWeight: " + spadeWeight);
-
-        // If any of the weights are above 60, then they have a really good change of winning the game, making
+        // If any of the weights are 1, then they have a really good change of winning the game, making
         // them bid smudge.
-        if (diamondWeight > 60 || clubWeight > 60 || heartWeight > 60 || spadeWeight > 60)  {
+        if (diamondWeight > 1 || clubWeight > 1 || heartWeight > 1 || spadeWeight > .1)  {
             bid = 5;
+            return;
         }
-
-        int weightTotal = diamondWeight + clubWeight + heartWeight + spadeWeight;
 
         // Makes a percentage Array List to see the probability of each suit
         ArrayList<Double> weightPercentage = new ArrayList<Double>();
-        weightPercentage.add( (double)diamondWeight/ (double)weightTotal);
-        weightPercentage.add ( (double)clubWeight/ (double)weightTotal);
-        weightPercentage.add ( (double)heartWeight/ (double)weightTotal);
-        weightPercentage.add ( (double)spadeWeight/ (double)weightTotal);
+        weightPercentage.add( diamondWeight/ totalWeight);
+        weightPercentage.add ( clubWeight/ totalWeight);
+        weightPercentage.add ( heartWeight/ totalWeight);
+        weightPercentage.add ( spadeWeight/ totalWeight);
+
 
 
         ArrayList<Integer> bidToChoose = new ArrayList<Integer>();

@@ -54,7 +54,7 @@ class PlayerTest{
     @Test
     void changeCardDisability (){
         new JFXPanel();
-        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2);
+        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2, 2);
         p1.getHand().addCard(c1);
         p1.changeCardDisability(true);
         assertEquals(true, p1.getHand().getCards().get(0).getCardButton().isDisabled());
@@ -63,7 +63,7 @@ class PlayerTest{
     @Test
     void playCard ()    {
         new JFXPanel();
-        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2);
+        Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2, 2);
         p1.getHand().addAllCards();
         ArrayList<Card> trick = new ArrayList<Card>();
         trick.add(c1);
