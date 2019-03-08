@@ -131,7 +131,7 @@ public class Pitch {
         else if (trumpCards.size() > 1)  {
             Card highCard = trumpCards.get(0);
             for (int i=0; i<trumpCards.size(); i++) {
-                if (trumpCards.get(i).getPoints() > highCard.getPoints())   {
+                if (trumpCards.get(i).getRankVal() > highCard.getRankVal())   {
                     highCard = trumpCards.get(i);
                 }
             }
@@ -141,7 +141,7 @@ public class Pitch {
         else {
             Card highCard = trickList.get(0);
             for (int i = 0; i < trickList.size(); i++) {
-                if (trickList.get(i).getPoints() > highCard.getPoints()) {
+                if (trickList.get(i).getRankVal() > highCard.getRankVal()) {
                     highCard = trickList.get(i);
                 }
             }
@@ -181,8 +181,6 @@ public class Pitch {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        //System.out.println("Winner: " + winner);
         trickWinner = winner;
         return winner;
     }
@@ -213,7 +211,7 @@ public class Pitch {
     }
 
     // Calculates the final score of each players trick with there bids
-    public void calculateScore (Player p1, ArrayList<AIPlayer> AI)  {
+    public void calculateScore (Player p1, ArrayList<AIPlayer> AI, BorderPane gamePane)  {
 
         // Calculate game point
         // For player
@@ -398,6 +396,69 @@ public class Pitch {
         for (int i=0; i<AI.size(); i++) {
             AI.get(i).resetTempPoints();
         }
+
+        displayWinners(gamePane, gamePointPlayer, playerHigh, playerLow, playerJack);
+
+    }
+
+    // Displayed the current winners of the round
+    public void displayWinners (BorderPane gamePane, int gamePointWinner, int playerHigh, int playerLow, int playerJack) {
+        // For displaying the score
+        Text points = new Text();
+        points.setFont(new Font(20));
+        //points.setWrappingWidth(500);
+        points.setTextAlignment(TextAlignment.CENTER);
+        points.setText("Winners");
+
+        // Sets the text of the winner of the game point
+        Text gamePoint = new Text();
+        gamePoint.setFont(new Font(10));
+        gamePoint.setTextAlignment(TextAlignment.CENTER);
+        if (gamePointWinner != 5)   {
+            gamePoint.setText("Game Point: Player " + (gamePointWinner+1));
+        }
+        else    {
+            gamePoint.setText("No Game Point Winner");
+        }
+
+        // Sets the text for the winner of the high of Trumps
+        Text highPlayer = new Text();
+        highPlayer.setFont(new Font(10));
+        highPlayer.setTextAlignment(TextAlignment.CENTER);
+        if (playerHigh != 5)    {
+            highPlayer.setText("High of Trumps: Player " + (playerHigh+1));
+        }
+        else    {
+            highPlayer.setText("No High of Trumps Winner");
+        }
+
+        // Sets the text for the winner of the low of trumps
+        Text lowPlayer = new Text();
+        lowPlayer.setFont(new Font(10));
+        lowPlayer.setTextAlignment(TextAlignment.CENTER);
+        if (playerLow != 5) {
+            lowPlayer.setText("Low of Trumps: Player " + (playerLow+1));
+        }
+        else    {
+            lowPlayer.setText("No Low of Trumps Winner");
+        }
+
+        // Sets the text for the winner of the jack of trumps
+        Text jackPlayer = new Text();
+        jackPlayer.setFont(new Font(10));
+        jackPlayer.setTextAlignment(TextAlignment.CENTER);
+        if (playerJack != 5)    {
+            jackPlayer.setText("Jack of Trumps: Player " + (playerJack+1));
+        }
+        else    {
+            jackPlayer.setText("No Jack of Trumps Winner");
+        }
+
+        // Makes a VBox with all the elements
+        VBox winnerVbox = new VBox(10, points, gamePoint, highPlayer, lowPlayer, jackPlayer);
+        winnerVbox.setAlignment(Pos.CENTER_RIGHT);
+        //gamePane.setCenter(null);
+        gamePane.setRight(winnerVbox);
     }
 
     // Determines who goes first depending on their bid
@@ -536,28 +597,24 @@ public class Pitch {
         VBox winnerFinal = new VBox(20, winnerHbox, exitWinner);
         winnerFinal.setAlignment(Pos.CENTER);
 
-        Scene winnerScene = new Scene(winnerFinal, 1000, 1000);
+        Scene winnerScene = new Scene(winnerFinal, 1280, 1000);
 
         return winnerScene;
-    }
-
-    public void displayWinners (BorderPane gamePane, Player p1, ArrayList<AIPlayer> AI) {
-
     }
 
     public void updateScoreVbox (BorderPane gamePane, Player p1, ArrayList<AIPlayer> AI)    {
         // For displaying the score
         Text points = new Text();
-        points.setFont(new Font(200));
+        points.setFont(new Font(20));
         //points.setWrappingWidth(500);
-        points.setTextAlignment(TextAlignment.CENTER);
+        //points.setTextAlignment(TextAlignment.CENTER);
         points.setText("Total Points");
         HBox pointText = new HBox(points);
 
         Text p1Points = new Text();
         points.setFont(new Font(10));
         //points.setWrappingWidth(500);
-        points.setTextAlignment(TextAlignment.CENTER);
+        //points.setTextAlignment(TextAlignment.CENTER);
         points.setText("Player 1 points: " + p1.getPoints());
         HBox p1PointsHbox = new HBox(p1Points);
         p1PointsHbox.setAlignment(Pos.CENTER_LEFT);
@@ -566,12 +623,13 @@ public class Pitch {
             Text botOnePoints = new Text();
             botOnePoints.setFont(new Font(10));
             //points.setWrappingWidth(500);
-            botOnePoints.setTextAlignment(TextAlignment.CENTER);
+            //botOnePoints.setTextAlignment(TextAlignment.CENTER);
             botOnePoints.setText("Player 2 points: " + AI.get(0).getPoints());
             HBox botOneHbox = new HBox(botOnePoints);
             botOneHbox.setAlignment(Pos.CENTER_LEFT);
 
-            VBox playerPoints = new VBox(10, pointText, p1PointsHbox, botOneHbox);
+            //VBox playerPoints = new VBox(10, pointText, p1PointsHbox, botOneHbox);
+            VBox playerPoints = new VBox(10, points, p1Points, botOnePoints);
             playerPoints.setAlignment(Pos.CENTER_LEFT);
             gamePane.setLeft(playerPoints);
 
@@ -580,7 +638,7 @@ public class Pitch {
             Text botOnePoints = new Text();
             botOnePoints.setFont(new Font(10));
             //points.setWrappingWidth(500);
-            botOnePoints.setTextAlignment(TextAlignment.CENTER);
+            //botOnePoints.setTextAlignment(TextAlignment.CENTER);
             botOnePoints.setText("Player 2 points: " + AI.get(0).getPoints());
             HBox botOneHbox = new HBox(botOnePoints);
             botOneHbox.setAlignment(Pos.CENTER_LEFT);
@@ -588,12 +646,13 @@ public class Pitch {
             Text botTwoPoints = new Text();
             botTwoPoints.setFont(new Font(10));
             //points.setWrappingWidth(500);
-            botTwoPoints.setTextAlignment(TextAlignment.CENTER);
+            //botTwoPoints.setTextAlignment(TextAlignment.CENTER);
             botTwoPoints.setText("Player 3 points: " + AI.get(1).getPoints());
             HBox botTwoHbox = new HBox(botTwoPoints);
             botTwoHbox.setAlignment(Pos.CENTER_LEFT);
 
-            VBox playerPoints = new VBox(10, pointText, p1PointsHbox, botOneHbox, botTwoHbox);
+            //VBox playerPoints = new VBox(10, pointText, p1PointsHbox, botOneHbox, botTwoHbox);
+            VBox playerPoints = new VBox(10, points, p1Points, botOnePoints, botTwoPoints);
             playerPoints.setAlignment(Pos.CENTER_LEFT);
             gamePane.setLeft(playerPoints);
         }
@@ -601,7 +660,7 @@ public class Pitch {
             Text botOnePoints = new Text();
             botOnePoints.setFont(new Font(10));
             //points.setWrappingWidth(500);
-            botOnePoints.setTextAlignment(TextAlignment.CENTER);
+            //botOnePoints.setTextAlignment(TextAlignment.CENTER);
             botOnePoints.setText("Player 2 points: " + AI.get(0).getPoints());
             HBox botOneHbox = new HBox(botOnePoints);
             botOneHbox.setAlignment(Pos.CENTER_LEFT);
@@ -609,7 +668,7 @@ public class Pitch {
             Text botTwoPoints = new Text();
             botTwoPoints.setFont(new Font(10));
             //points.setWrappingWidth(500);
-            botTwoPoints.setTextAlignment(TextAlignment.CENTER);
+            //botTwoPoints.setTextAlignment(TextAlignment.CENTER);
             botTwoPoints.setText("Player 3 points: " + AI.get(1).getPoints());
             HBox botTwoHbox = new HBox(botTwoPoints);
             botTwoHbox.setAlignment(Pos.CENTER_LEFT);
@@ -617,7 +676,7 @@ public class Pitch {
             Text botThreePoints = new Text();
             botThreePoints.setFont(new Font(10));
             //points.setWrappingWidth(500);
-            botThreePoints.setTextAlignment(TextAlignment.CENTER);
+            //botThreePoints.setTextAlignment(TextAlignment.CENTER);
             botThreePoints.setText("Player 4 points: " + AI.get(2).getPoints());
             HBox botThreeHbox = new HBox(botThreePoints);
             botThreeHbox.setAlignment(Pos.CENTER_LEFT);

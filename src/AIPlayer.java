@@ -890,17 +890,17 @@ public class AIPlayer extends Player {
 
         // If any of the weights are 1, then they have a really good change of winning the game, making
         // them bid smudge.
-        if (diamondWeight > 1 || clubWeight > 1 || heartWeight > 1 || spadeWeight > .1)  {
+        if (diamondWeight > 1.0 || clubWeight > 1.0 || heartWeight > 1.0 || spadeWeight > 1.0)  {
             bid = 5;
             return;
         }
 
         // Makes a percentage Array List to see the probability of each suit
         ArrayList<Double> weightPercentage = new ArrayList<Double>();
-        weightPercentage.add( diamondWeight/ totalWeight);
-        weightPercentage.add ( clubWeight/ totalWeight);
-        weightPercentage.add ( heartWeight/ totalWeight);
-        weightPercentage.add ( spadeWeight/ totalWeight);
+        weightPercentage.add(diamondWeight);
+        weightPercentage.add(clubWeight);
+        weightPercentage.add(heartWeight);
+        weightPercentage.add(spadeWeight);
 
 
 
