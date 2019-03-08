@@ -143,7 +143,6 @@ public class AIPlayer extends Player {
                 3. Play useless card
         */
         if (!cardsPlayedRound && !cardsPlayedTurn)  {
-            System.out.println("Case 1");
             boolean atLeastQueen = false;
             boolean allTrumps = true;
             int highIndex = 0;
@@ -175,7 +174,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 1.1 High Trump");
                 hand.getCards().get(highIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(highIndex));
                 hand.getCards().remove(highIndex);
@@ -206,7 +204,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 1.2 >2 Trump");
                 hand.getCards().get(lowTrumpIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(lowTrumpIndex));
                 hand.getCards().remove(lowTrumpIndex);
@@ -241,7 +238,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 1.3 >2 nonTrump");
                 hand.getCards().get(realIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(realIndex));
                 hand.getCards().remove(realIndex);
@@ -257,7 +253,6 @@ public class AIPlayer extends Player {
                 3. Play useless card
         */
         else if (cardsPlayedRound && !cardsPlayedTurn)  {
-            System.out.println("Case 2");
             boolean atLeastQueen = false;
             boolean allTrumps = true;
             Card highCard = null;
@@ -295,7 +290,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 2.1 Plays that highest trump card");
                 hand.getCards().get(realIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(realIndex));
                 hand.getCards().remove(realIndex);
@@ -325,7 +319,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 2.2 Plays trump card that is >2");
                 hand.getCards().get(realIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(realIndex));
                 hand.getCards().remove(realIndex);
@@ -361,7 +354,6 @@ public class AIPlayer extends Player {
                         }
                     }
                     // Plays the card
-                    System.out.println("Case 2.3 >2 nonTrump");
                     hand.getCards().get(realIndex).setPlayedBy(bot);
                     trickList.add(hand.getCards().get(realIndex));
                     hand.getCards().remove(realIndex);
@@ -387,7 +379,6 @@ public class AIPlayer extends Player {
                         }
                     }
                     // Plays the card
-                    System.out.println("Case 2.3 >2 nonTrump");
                     hand.getCards().get(realIndex).setPlayedBy(bot);
                     trickList.add(hand.getCards().get(realIndex));
                     hand.getCards().remove(realIndex);
@@ -407,7 +398,6 @@ public class AIPlayer extends Player {
                 6. No trump was played, but bot plays a useless card
         */
         else if (cardsPlayedRound && cardsPlayedTurn)  {
-            System.out.println("Case 3");
             boolean trumpPlayed = false;
             boolean hasTrump = false;
             boolean beatTrumpPlayed = false;
@@ -503,7 +493,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 3.1 Beat trump played");
                 hand.getCards().get(realIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(realIndex));
                 hand.getCards().remove(realIndex);
@@ -519,7 +508,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 3.2 Can't beat trump but has to play trump since bot only has trumps");
                 hand.getCards().get(realIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(realIndex));
                 hand.getCards().remove(realIndex);
@@ -535,7 +523,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 3.3 Can't beat trump but doesn't have card to beat trump");
                 hand.getCards().get(realIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(realIndex));
                 hand.getCards().remove(realIndex);
@@ -551,7 +538,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 3.4 No trump was played, so bot plays trump");
                 hand.getCards().get(realIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(realIndex));
                 hand.getCards().remove(realIndex);
@@ -567,7 +553,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 3.5 No trump was played, but bot has a higher card");
                 hand.getCards().get(realIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(realIndex));
                 hand.getCards().remove(realIndex);
@@ -583,7 +568,6 @@ public class AIPlayer extends Player {
                     }
                 }
                 // Plays the card
-                System.out.println("Case 3.6 No trump was played, but bot plays a useless card");
                 hand.getCards().get(realIndex).setPlayedBy(bot);
                 trickList.add(hand.getCards().get(realIndex));
                 hand.getCards().remove(realIndex);
@@ -597,7 +581,6 @@ public class AIPlayer extends Player {
             running no matter what
         */
         else    {
-            System.out.println("Case 4 OOOOOOOOOOOOOOOOOOOO SHHHHHHHHHHIIIIIIIITTTTTTTTTT    bot: " + bot);
             int ranIndex = randomGenerator.nextInt(selectableCards.size());
             Card choosenCard = selectableCards.get(ranIndex);
             int realIndex = 0;

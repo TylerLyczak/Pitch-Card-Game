@@ -356,7 +356,7 @@ public class Main extends Application {
                     gameLoop.stop();
                 }
 
-                game.updateScoreVbox(gamePane, p1, AI);
+                game.updateScoreVbox(gamePane, p1, AI, rotate);
 
             }
         };

@@ -591,7 +591,7 @@ public class Pitch {
     }
 
     // Updates the score after a round if completed
-    public void updateScoreVbox (BorderPane gamePane, Player p1, ArrayList<AIPlayer> AI)    {
+    public void updateScoreVbox (BorderPane gamePane, Player p1, ArrayList<AIPlayer> AI, double rotate)    {
         // For displaying the score
         Text totalPoints = new Text();
         totalPoints.setFont(new Font(20));
@@ -653,7 +653,7 @@ public class Pitch {
         }
 
         VBox playerBids = updateBidVbox(p1, AI);
-        VBox trumpVbox = updateTrumpVbox();
+        VBox trumpVbox = updateTrumpVbox(rotate);
 
         VBox totalVbox = new VBox(50, playerBids, playerPoints, trumpVbox);
         totalVbox.setAlignment(Pos.CENTER_LEFT);
@@ -724,7 +724,7 @@ public class Pitch {
         return playerBids;
     }
 
-    public VBox updateTrumpVbox ()   {
+    public VBox updateTrumpVbox (double rotate)   {
         VBox trumpVbox = new VBox(20);
         trumpVbox.setAlignment(Pos.CENTER_LEFT);
 
@@ -736,9 +736,10 @@ public class Pitch {
         if (trump == 'S')   {
             Image spadeTrump = new Image("file:src/pics/spade.png");
             ImageView s = new ImageView(spadeTrump);
-            s.setFitHeight(40);
-            s.setFitWidth(40);
+            s.setFitHeight(100);
+            s.setFitWidth(100);
             s.setPreserveRatio(true);
+            s.setScaleX((((180.0 - (double)rotate)/180.0)));
 
             Text spade = new Text();
             spade.setFont(new Font(10));
@@ -751,9 +752,10 @@ public class Pitch {
         else if (trump == 'C')  {
             Image clubTrump = new Image("file:src/pics/club.png");
             ImageView c = new ImageView(clubTrump);
-            c.setFitHeight(40);
-            c.setFitWidth(40);
+            c.setFitHeight(100);
+            c.setFitWidth(100);
             c.setPreserveRatio(true);
+            c.setScaleX((((180.0 - (double)rotate)/180.0)));
 
             Text club = new Text();
             club.setFont(new Font(10));
@@ -766,9 +768,10 @@ public class Pitch {
         else if (trump == 'D')  {
             Image diamondTrump = new Image("file:src/pics/diamond.png");
             ImageView d = new ImageView(diamondTrump);
-            d.setFitHeight(40);
-            d.setFitWidth(40);
+            d.setFitHeight(100);
+            d.setFitWidth(100);
             d.setPreserveRatio(true);
+            d.setScaleX((((180.0 - (double)rotate)/180.0)));
 
             Text diamond = new Text();
             diamond.setFont(new Font(10));
@@ -781,9 +784,10 @@ public class Pitch {
         else if (trump == 'H')  {
             Image heartTrump = new Image("file:src/pics/heart.png");
             ImageView h = new ImageView(heartTrump);
-            h.setFitHeight(40);
-            h.setFitWidth(40);
+            h.setFitHeight(100);
+            h.setFitWidth(100);
             h.setPreserveRatio(true);
+            h.setScaleX((((180.0 - (double)rotate)/180.0)));
 
             Text heart = new Text();
             heart.setFont(new Font(10));
