@@ -541,6 +541,10 @@ public class Pitch {
         return winnerScene;
     }
 
+    public void displayWinners (BorderPane gamePane, Player p1, ArrayList<AIPlayer> AI) {
+
+    }
+
     public void updateScoreVbox (BorderPane gamePane, Player p1, ArrayList<AIPlayer> AI)    {
         // For displaying the score
         Text points = new Text();
