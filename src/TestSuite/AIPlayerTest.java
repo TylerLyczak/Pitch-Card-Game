@@ -135,8 +135,4 @@ class AIPlayerTest {
         originalHand.removeAll(testBot.getHand().getCards());
         assertEquals(c2.getRank(), originalHand.get(0).getRank(), "Test first case, should return 3 of Spades");
     }
-
-    @Test
-    void determineBid() {
-    }
 }

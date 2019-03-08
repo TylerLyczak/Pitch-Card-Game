@@ -70,6 +70,8 @@ public class Player {
 
     public void resetTempPoints ()  { tempPoints = 0;}
 
+    public void resetHand ()    { hand.deleteDeck();}
+
     public void setBid (int amount) { bid = amount; newBid = amount;}
 
 

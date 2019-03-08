@@ -1,6 +1,8 @@
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -67,7 +69,6 @@ public class Pitch {
 
     // Updates the HBox of the players hand with the cards
     public void updateHand (HBox hand, Player p1)   {
-        //System.out.println("Update Hand");
         for (int i=0; i<6; i++) {
             hand.getChildren().add(p1.getHand().getCards().get(i).getCardButton());
         }
@@ -77,29 +78,15 @@ public class Pitch {
     // Updates the middle pile with the cards played by the players
     public void updateTrickList (BorderPane gamePane, ArrayList<Card> trickList)   {
         StackPane trickPane = new StackPane();
-        //gamePane.setCenter(null);
         for (int i=0; i<trickList.size(); i++)  {
-            System.out.println("In updateTickList, card: " + trickList.get(i).getSrc());
             trickList.get(i).getCardPic().setRotate(50*i);
             trickPane.getChildren().add(trickList.get(i).getCardPic());
         }
         gamePane.setCenter(trickPane);
-
-        /*
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        */
-
-        //gamePane.setLeft(trickPane);
     }
 
     // After turns are completed, the cards in the middle are removed.
     public void removeTrickList (Player p1, BorderPane gamePane)    {
-
-        //gamePane.setCenter(null);
         trickList.clear();
         p1.changeBoolButtonPress();
         gamePane.setCenter(null);
@@ -108,9 +95,23 @@ public class Pitch {
     public void decideTrump ()  {
         if (roundStart && trickList.size() != 0) {
             trump = trickList.get(0).getSuit();
-            System.out.println("Trump: " + trump);
             roundStart = false;
             roundMiddle = true;
+        }
+    }
+
+    // Checks if all bids are 1
+    public boolean checkBids (Player p1, ArrayList<AIPlayer> AI) {
+        if (p1.getBid() == 1)   {
+            for (int i=0; i<AI.size(); i++) {
+                if (AI.get(i).getBid() != 1)    {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else    {
+            return false;
         }
     }
 
@@ -118,11 +119,9 @@ public class Pitch {
     public int decideTrick ()  {
         if (amountOfPlayers != trickList.size())    { return 0;}
 
-        boolean trumpPlayed = false;
         ArrayList<Card> trumpCards = new ArrayList<Card>();
         for (int i=0; i<trickList.size(); i++)  {
             if (trickList.get(i).getSuit() == trump)    {
-                trumpPlayed = true;
                 trumpCards.add(trickList.get(i));
             }
         }
@@ -166,14 +165,6 @@ public class Pitch {
             }
         }
 
-        /*
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        */
-
         removeTrickList(p1, gamePane);
 
         try {
@@ -212,7 +203,6 @@ public class Pitch {
 
     // Calculates the final score of each players trick with there bids
     public void calculateScore (Player p1, ArrayList<AIPlayer> AI, BorderPane gamePane)  {
-
         // Calculate game point
         // For player
         ArrayList<Integer> gamePointList = new ArrayList<Integer>();
@@ -457,7 +447,6 @@ public class Pitch {
         // Makes a VBox with all the elements
         VBox winnerVbox = new VBox(10, points, gamePoint, highPlayer, lowPlayer, jackPlayer);
         winnerVbox.setAlignment(Pos.CENTER_RIGHT);
-        //gamePane.setCenter(null);
         gamePane.setRight(winnerVbox);
     }
 
@@ -474,7 +463,6 @@ public class Pitch {
             }
         }
         return highPlayer;
-
     }
 
     // Keeps track of whos turn it is and allows them to make that turn
@@ -602,93 +590,221 @@ public class Pitch {
         return winnerScene;
     }
 
+    // Updates the score after a round if completed
     public void updateScoreVbox (BorderPane gamePane, Player p1, ArrayList<AIPlayer> AI)    {
         // For displaying the score
-        Text points = new Text();
-        points.setFont(new Font(20));
-        //points.setWrappingWidth(500);
-        //points.setTextAlignment(TextAlignment.CENTER);
-        points.setText("Total Points");
-        HBox pointText = new HBox(points);
+        Text totalPoints = new Text();
+        totalPoints.setFont(new Font(20));
+        totalPoints.setTextAlignment(TextAlignment.LEFT);
+        totalPoints.setText("Total Points");
 
+        // Adds the player
         Text p1Points = new Text();
-        points.setFont(new Font(10));
-        //points.setWrappingWidth(500);
-        //points.setTextAlignment(TextAlignment.CENTER);
-        points.setText("Player 1 points: " + p1.getPoints());
-        HBox p1PointsHbox = new HBox(p1Points);
-        p1PointsHbox.setAlignment(Pos.CENTER_LEFT);
+        p1Points.setFont(new Font(10));
+        p1Points.setTextAlignment(TextAlignment.LEFT);
+        p1Points.setText("Player 1 points: " + p1.getPoints());
 
+        // VBox that contains all the players points
+        VBox playerPoints = new VBox(20);
+
+        // Goes through each bot to check if and adds them to the VBox
         if (AI.size() == 1) {
             Text botOnePoints = new Text();
             botOnePoints.setFont(new Font(10));
-            //points.setWrappingWidth(500);
-            //botOnePoints.setTextAlignment(TextAlignment.CENTER);
+            botOnePoints.setWrappingWidth(0);
+            botOnePoints.setTextAlignment(TextAlignment.LEFT);
             botOnePoints.setText("Player 2 points: " + AI.get(0).getPoints());
-            HBox botOneHbox = new HBox(botOnePoints);
-            botOneHbox.setAlignment(Pos.CENTER_LEFT);
 
-            //VBox playerPoints = new VBox(10, pointText, p1PointsHbox, botOneHbox);
-            VBox playerPoints = new VBox(10, points, p1Points, botOnePoints);
+            playerPoints.getChildren().addAll(totalPoints, p1Points, botOnePoints);
             playerPoints.setAlignment(Pos.CENTER_LEFT);
-            gamePane.setLeft(playerPoints);
-
         }
         else if (AI.size() == 2)    {
             Text botOnePoints = new Text();
             botOnePoints.setFont(new Font(10));
-            //points.setWrappingWidth(500);
-            //botOnePoints.setTextAlignment(TextAlignment.CENTER);
+            botOnePoints.setTextAlignment(TextAlignment.LEFT);
             botOnePoints.setText("Player 2 points: " + AI.get(0).getPoints());
-            HBox botOneHbox = new HBox(botOnePoints);
-            botOneHbox.setAlignment(Pos.CENTER_LEFT);
 
             Text botTwoPoints = new Text();
             botTwoPoints.setFont(new Font(10));
-            //points.setWrappingWidth(500);
-            //botTwoPoints.setTextAlignment(TextAlignment.CENTER);
+            botTwoPoints.setTextAlignment(TextAlignment.LEFT);
             botTwoPoints.setText("Player 3 points: " + AI.get(1).getPoints());
-            HBox botTwoHbox = new HBox(botTwoPoints);
-            botTwoHbox.setAlignment(Pos.CENTER_LEFT);
 
-            //VBox playerPoints = new VBox(10, pointText, p1PointsHbox, botOneHbox, botTwoHbox);
-            VBox playerPoints = new VBox(10, points, p1Points, botOnePoints, botTwoPoints);
+            playerPoints.getChildren().addAll(totalPoints, p1Points, botOnePoints, botTwoPoints);
             playerPoints.setAlignment(Pos.CENTER_LEFT);
-            gamePane.setLeft(playerPoints);
         }
         else if (AI.size() == 3)    {
             Text botOnePoints = new Text();
             botOnePoints.setFont(new Font(10));
-            //points.setWrappingWidth(500);
-            //botOnePoints.setTextAlignment(TextAlignment.CENTER);
+            botOnePoints.setTextAlignment(TextAlignment.LEFT);
             botOnePoints.setText("Player 2 points: " + AI.get(0).getPoints());
-            HBox botOneHbox = new HBox(botOnePoints);
-            botOneHbox.setAlignment(Pos.CENTER_LEFT);
 
             Text botTwoPoints = new Text();
             botTwoPoints.setFont(new Font(10));
-            //points.setWrappingWidth(500);
-            //botTwoPoints.setTextAlignment(TextAlignment.CENTER);
+            botTwoPoints.setTextAlignment(TextAlignment.LEFT);
             botTwoPoints.setText("Player 3 points: " + AI.get(1).getPoints());
-            HBox botTwoHbox = new HBox(botTwoPoints);
-            botTwoHbox.setAlignment(Pos.CENTER_LEFT);
 
             Text botThreePoints = new Text();
             botThreePoints.setFont(new Font(10));
-            //points.setWrappingWidth(500);
-            //botThreePoints.setTextAlignment(TextAlignment.CENTER);
+            botThreePoints.setTextAlignment(TextAlignment.LEFT);
             botThreePoints.setText("Player 4 points: " + AI.get(2).getPoints());
-            HBox botThreeHbox = new HBox(botThreePoints);
-            botThreeHbox.setAlignment(Pos.CENTER_LEFT);
 
-            VBox playerPoints = new VBox(10, pointText, p1PointsHbox, botOneHbox, botTwoHbox, botThreeHbox);
+            playerPoints.getChildren().addAll(totalPoints, p1Points, botOnePoints, botTwoPoints, botThreePoints);
             playerPoints.setAlignment(Pos.CENTER_LEFT);
-            gamePane.setLeft(playerPoints);
         }
+
+        VBox playerBids = updateBidVbox(p1, AI);
+        VBox trumpVbox = updateTrumpVbox();
+
+        VBox totalVbox = new VBox(50, playerBids, playerPoints, trumpVbox);
+        totalVbox.setAlignment(Pos.CENTER_LEFT);
+        gamePane.setLeft(totalVbox);
 
 
     }
 
+    // Updates when the players make a new bid
+    public VBox updateBidVbox (Player p1, ArrayList<AIPlayer> AI)  {
+        Text totalBid = new Text();
+        totalBid.setFont(new Font(20));
+        totalBid.setTextAlignment(TextAlignment.LEFT);
+        totalBid.setText("Current Bids");
+
+        // Adds the player
+        Text p1Bid = new Text();
+        p1Bid.setFont(new Font(10));
+        p1Bid.setTextAlignment(TextAlignment.LEFT);
+        p1Bid.setText("Player 1 bid: " + p1.getBid());
+
+        // VBox that conatins all the players bids
+        VBox playerBids = new VBox(20);
+
+        // Goes through each bot to check if and adds them to the VBox
+        if (AI.size() == 1) {
+            Text botOneBid = new Text();
+            botOneBid.setFont(new Font(10));;
+            botOneBid.setTextAlignment(TextAlignment.LEFT);
+            botOneBid.setText("Player 2 bid: " + AI.get(0).getBid());
+
+            playerBids.getChildren().addAll(totalBid, p1Bid, botOneBid);
+            playerBids.setAlignment(Pos.CENTER_LEFT);
+        }
+        else if (AI.size() == 2)    {
+            Text botOneBid = new Text();
+            botOneBid.setFont(new Font(10));
+            botOneBid.setTextAlignment(TextAlignment.LEFT);
+            botOneBid.setText("Player 2 bid: " + AI.get(0).getBid());
+
+            Text botTwoBid = new Text();
+            botTwoBid.setFont(new Font(10));
+            botTwoBid.setTextAlignment(TextAlignment.LEFT);
+            botTwoBid.setText("Player 3 bid: " + AI.get(1).getBid());
+
+            playerBids.getChildren().addAll(totalBid, p1Bid, botOneBid, botTwoBid);
+            playerBids.setAlignment(Pos.CENTER_LEFT);
+        }
+        else if (AI.size() == 3)    {
+            Text botOneBid = new Text();
+            botOneBid.setFont(new Font(10));
+            botOneBid.setTextAlignment(TextAlignment.LEFT);
+            botOneBid.setText("Player 2 bid: " + AI.get(0).getBid());
+
+            Text botTwoBid = new Text();
+            botTwoBid.setFont(new Font(10));
+            botTwoBid.setTextAlignment(TextAlignment.LEFT);
+            botTwoBid.setText("Player 3 bid: " + AI.get(1).getBid());
+
+            Text botThreeBid = new Text();
+            botThreeBid.setFont(new Font(10));
+            botThreeBid.setTextAlignment(TextAlignment.LEFT);
+            botThreeBid.setText("Player 4 bid: " + AI.get(2).getBid());
+
+            playerBids.getChildren().addAll(totalBid, p1Bid, botOneBid, botTwoBid, botThreeBid);
+            playerBids.setAlignment(Pos.CENTER_LEFT);
+        }
+        return playerBids;
+    }
+
+    public VBox updateTrumpVbox ()   {
+        VBox trumpVbox = new VBox(20);
+        trumpVbox.setAlignment(Pos.CENTER_LEFT);
+
+        Text trumpText = new Text();
+        trumpText.setFont(new Font(20));
+        trumpText.setTextAlignment(TextAlignment.LEFT);
+        trumpText.setText("Trump");
+
+        if (trump == 'S')   {
+            Image spadeTrump = new Image("file:src/pics/spade.png");
+            ImageView s = new ImageView(spadeTrump);
+            s.setFitHeight(40);
+            s.setFitWidth(40);
+            s.setPreserveRatio(true);
+
+            Text spade = new Text();
+            spade.setFont(new Font(10));
+            spade.setTextAlignment(TextAlignment.LEFT);
+            spade.setText("Spade");
+
+            trumpVbox.getChildren().addAll(trumpText, s, spade);
+            trumpVbox.setAlignment(Pos.CENTER_LEFT);
+        }
+        else if (trump == 'C')  {
+            Image clubTrump = new Image("file:src/pics/club.png");
+            ImageView c = new ImageView(clubTrump);
+            c.setFitHeight(40);
+            c.setFitWidth(40);
+            c.setPreserveRatio(true);
+
+            Text club = new Text();
+            club.setFont(new Font(10));
+            club.setTextAlignment(TextAlignment.LEFT);
+            club.setText("Club");
+
+            trumpVbox.getChildren().addAll(trumpText, c, club);
+            trumpVbox.setAlignment(Pos.CENTER_LEFT);
+        }
+        else if (trump == 'D')  {
+            Image diamondTrump = new Image("file:src/pics/diamond.png");
+            ImageView d = new ImageView(diamondTrump);
+            d.setFitHeight(40);
+            d.setFitWidth(40);
+            d.setPreserveRatio(true);
+
+            Text diamond = new Text();
+            diamond.setFont(new Font(10));
+            diamond.setTextAlignment(TextAlignment.LEFT);
+            diamond.setText("Diamond");
+
+            trumpVbox.getChildren().addAll(trumpText, d, diamond);
+            trumpVbox.setAlignment(Pos.CENTER_LEFT);
+        }
+        else if (trump == 'H')  {
+            Image heartTrump = new Image("file:src/pics/heart.png");
+            ImageView h = new ImageView(heartTrump);
+            h.setFitHeight(40);
+            h.setFitWidth(40);
+            h.setPreserveRatio(true);
+
+            Text heart = new Text();
+            heart.setFont(new Font(10));
+            heart.setTextAlignment(TextAlignment.LEFT);
+            heart.setText("Heart");
+
+            trumpVbox.getChildren().addAll(trumpText, h, heart);
+            trumpVbox.setAlignment(Pos.CENTER_LEFT);
+        }
+        else    {
+            Text noTrump = new Text();
+            noTrump.setFont(new Font(10));
+            noTrump.setTextAlignment(TextAlignment.LEFT);
+            noTrump.setText("No Trump Played");
+
+            trumpVbox.getChildren().addAll(trumpText, noTrump);
+            trumpVbox.setAlignment(Pos.CENTER_LEFT);
+        }
+
+        return trumpVbox;
+    }
 
 
 }

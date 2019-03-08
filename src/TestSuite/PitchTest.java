@@ -29,43 +29,6 @@ class PitchTest {
         assertNotEquals(null, testPitch.getRoundEnd(), "Test is a value was initialized in Pitch()");
     }
 
-
-    @Test
-    void setAmountOfPlayers() {
-    }
-
-    @Test
-    void setRoundStart() {
-    }
-
-    @Test
-    void setRoundEnd() {
-    }
-
-    @Test
-    void setRoundBid() {
-    }
-
-    @Test
-    void setTurn() {
-    }
-
-    @Test
-    void getRoundStart() {
-    }
-
-    @Test
-    void getRoundEnd() {
-    }
-
-    @Test
-    void getRoundBid() {
-    }
-
-    @Test
-    void getTurn() {
-    }
-
     @Test
     void updateHand() {
         HBox testBox = new HBox();
@@ -84,34 +47,6 @@ class PitchTest {
         }
         //compareBox.getChildren().size();
         assertEquals(compareBox.getChildren().size(), testBox.getChildren().size(), "Tests if the two HBoxes are the same");
-    }
-
-    @Test
-    void updateTrickList() {
-    }
-
-    @Test
-    void removeTrickList() {
-    }
-
-    @Test
-    void decideTrump() {
-    }
-
-    @Test
-    void decideTrick() {
-    }
-
-    @Test
-    void playerReceiveTrick() {
-    }
-
-    @Test
-    void checkRoundEnd() {
-    }
-
-    @Test
-    void calculateScore() {
     }
 
     @Test
@@ -134,10 +69,6 @@ class PitchTest {
     }
 
     @Test
-    void gameTurn() {
-    }
-
-    @Test
     void updateSuitsPlayed() {
         Card c1 = new Card("2", 'C', "file:../playingcards/2C.png", 2, 2);
         ArrayList<Card> testTrick = new ArrayList<Card>();
@@ -156,29 +87,5 @@ class PitchTest {
         testPitch.updateSuitsPlayed();
         testPitch.clearSuitsPlayed();
         assertEquals(0, testPitch.getSuitsPlayed().size(), "Tests if suitsPlayed was cleared");
-    }
-
-    @Test
-    void addTrumpSuitsPlayed() {
-    }
-
-    @Test
-    void updatePlayerHand() {
-    }
-
-    @Test
-    void isWinner() {
-    }
-
-    @Test
-    void determineWinner() {
-    }
-
-    @Test
-    void makeWinnerScene() {
-    }
-
-    @Test
-    void updateScoreVbox() {
     }
 }

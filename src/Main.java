@@ -1,4 +1,9 @@
-
+/*
+    Tyler Lyczak
+    Project 2
+    CS 342
+    Make a GUI version of the card game Pitch while being faithful to all the rules
+*/
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -121,15 +126,6 @@ public class Main extends Application {
         imageSuits.add(v3);
         imageSuits.add(v4);
 
-        /*
-        // Gameboard image
-        Image table = new Image("file:src/pics/table.png");
-        //ImageView tableView = new ImageView(table);
-        BackgroundSize backSize = new BackgroundSize(1280, 1000, false, false, true, false);
-        BackgroundImage backImg = new BackgroundImage(table , BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER, backSize);
-        */
-
         // Main menu text
         Text t = new Text();
         t.setFont(new Font(50));
@@ -142,7 +138,7 @@ public class Main extends Application {
         BorderPane gamePane = new BorderPane();
 
         pane.setPadding(new Insets(100));
-        gamePane.setPadding(new Insets(100));
+        gamePane.setPadding(new Insets(50));
 
         //Added playerSelect and gameOptions to paneCenter
         HBox playerSelect = new HBox (100, twoPlayer, threePlayer, fourPlayer);
@@ -169,10 +165,8 @@ public class Main extends Application {
         HBox inGameButtons = new HBox(50, newGame, exitInGame);
         inGameButtons.setAlignment(Pos.CENTER);
 
-
         // Gives player cards
         p1.getHand().setCards(gameDealer.dealHand());
-
 
         HBox playerHand = new HBox (10);
         playerHand.setAlignment(Pos.BOTTOM_CENTER);
@@ -182,11 +176,8 @@ public class Main extends Application {
 
         pane.setCenter(paneCenter);
 
-
-
         gamePane.setBottom(playerHand);
         gamePane.setTop(inGameButtons);
-        //gamePane.setBackground(new Background(backImg));
 
 
         submit.setOnAction( (event -> {
@@ -198,13 +189,6 @@ public class Main extends Application {
                 AI.get(i).updateCardHandWeights();
                 AI.get(i).determineBid(bidNums);
             }
-            // If bids are all one, game will reset
-
-            System.out.println("Player bid: " + p1.getBid());
-            for (int i=0; i<AI.size(); i++) {
-                System.out.println("AI num: " + i + " bid: " + AI.get(i).getBid());
-            }
-
             p1.changeCardDisability(true);
             gameDealer.setGameStart(true);
             game.setRoundEnd(false);
@@ -220,11 +204,18 @@ public class Main extends Application {
             gameDealer = new PitchDealer();
             gameDealer.createDealer();
             p1.getHand().setCards(gameDealer.dealHand());
-            myStage.setScene(sceneMap.get("game"));
+            //myStage.setScene(sceneMap.get("game"));
             gamePane.setCenter(bidBoxes);
             // Updates hbox with card buttons
             playerHand.getChildren().clear();
             game.updateHand(playerHand, p1);
+            game.setAmountOfPlayers(playerNum);
+            for (int i=0; i<playerNum-1; i++) {
+                AIPlayer bot = new AIPlayer();
+                AI.add(bot);
+                AI.get(i).getHand().cards = gameDealer.dealHand();
+            }
+            myStage.setScene(sceneMap.get("game"));
             gameLoop.start();
         }));
 
@@ -263,26 +254,46 @@ public class Main extends Application {
 
 
         gameLoop = new AnimationTimer() {
-            int i = 0;
+            int rotate = 0;
             int imageIndex = 0;
 
             @Override
             public void handle(long now) {
-                i++;
-                if(i == 360) {
-                    i = 0;
+                // This is used for the main screen with the suits rotating
+                rotate++;
+                if(rotate == 360) {
+                    rotate = 0;
                     imageIndex++;
                     if (imageIndex == 4)    {imageIndex = 0;}
                     updatePaneCenter(pane, paneCenter, welcomeScreenText, playerSelect, gameOptions, imageSuits, imageIndex);
                 }
-                imageSuits.get(imageIndex).setRotate(i);
+                imageSuits.get(imageIndex).setRotate(rotate);
 
-                if (i < 180) {
-                    imageSuits.get(imageIndex).setScaleX((((180.0 - (double)i)/180.0)));
+                if (rotate < 180) {
+                    imageSuits.get(imageIndex).setScaleX((((180.0 - (double)rotate)/180.0)));
                 }
                 else {
-                    int j = i - 181;
-                    imageSuits.get(imageIndex).setScaleX((double)j/180.0);
+                    int counterRotate = rotate - 181;
+                    imageSuits.get(imageIndex).setScaleX((double)counterRotate/180.0);
+                }
+
+                // if (all bids are 1)  { reset dealer deack and hands and bidding}
+                if (game.checkBids(p1, AI)) {
+                    gameLoop.stop();
+                    gameDealer.dealerReset();
+                    p1.resetHand();
+                    p1.resetBid();
+                    playerHand.getChildren().clear();
+                    p1.getHand().setCards(gameDealer.dealHand());
+                    game.updateHand(playerHand, p1);
+
+                    for (int i=0; i<playerNum-1; i++) {
+                        AI.get(i).resetHand();
+                        AI.get(i).resetBid();
+                        AI.get(i).getHand().cards = gameDealer.dealHand();
+                    }
+                    gamePane.setCenter(bidBoxes);
+                    gameLoop.start();
                 }
 
                 //System.out.println("Turn: " + game.getTurn());
@@ -297,6 +308,7 @@ public class Main extends Application {
                 // Sees the first cards played and makes it trump
                 game.decideTrump();
 
+                // Constantly updates the players hand with what cards they can play
                 game.updatePlayerHand(p1);
 
 
@@ -311,28 +323,25 @@ public class Main extends Application {
                 if (game.checkRoundEnd(p1, AI)) {
                     // Calculate the score of each players won tricks
                     game.calculateScore(p1, AI, gamePane);
-
-
+                    // Makes sure the deck has enough cards to deal out
                     gameDealer.checkDeck(game.getAmountOfPlayers());
-
-
+                    // Makes new hand for the player
                     p1.giveNewHand(gameDealer.dealHand());
                     HBox newBox = new HBox(10);
                     game.updateHand(newBox, p1);
                     gamePane.setBottom(newBox);
 
-
+                    // Gives cards to the bots
                     for (int i=0; i<AI.size(); i++) {
                         AI.get(i).giveNewHand(gameDealer.dealHand());
                     }
-
+                    // Resets the played suits
                     game.clearSuitsPlayed();
                 }
 
                 if (game.getRoundEnd())  {
                     gamePane.setCenter(bidBoxes);
                     game.clearSuitsPlayed();
-                    //myStage.setScene(sceneMap.get(bidSelection));
 
                 }
                 else    {
